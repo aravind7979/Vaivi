@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaivi Download</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #121212; /* Light black as requested */
+            --bg-panel: rgba(30, 30, 35, 0.7);
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .background-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.15;
+            width: 500px;
+            height: 500px;
+            background: #4f46e5;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 24px 64px;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(18, 18, 18, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+            box-sizing: border-box;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 10px #22c55e;
+        }
+        
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 32px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--text-main);
+        }
+
+        .download-box {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .download-box h1 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 28px;
+            background: linear-gradient(135deg, #a5b4fc, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .download-box p {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-bottom: 16px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+        }
+
+        .btn-outline {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .os-info {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-effects">
+        <div class="glow-orb"></div>
+    </div>
+
+    <header>
+        <a href="index.html" class="logo">
+            <div class="status-dot"></div>
+            Vaivi
+        </a>
+        <nav>
+            <a href="index.html">Web App</a>
+            <a href="download.html">Downloads</a>
+        </nav>
+    </header>
+
+    <div class="download-box">
+        <h1>Download Vaivi</h1>
+        <p>Get the native application for the best screen-understanding experience.</p>
+        
+        <button class="btn btn-primary" id="download-btn">
+            <span class="icon">⬇️</span> Download for Windows
+        </button>
+        
+        <button class="btn btn-outline" onclick="alert('Android APK download starting...')">
+            <span class="icon">📱</span> Download Android APK
+        </button>
+        
+        <div class="os-info" id="os-info">Checking your OS...</div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const btn = document.getElementById("download-btn");
+            const osInfo = document.getElementById("os-info");
+            
+            const userAgent = navigator.userAgent.toLowerCase();
+            let platform = "Unknown";
+
+            if (userAgent.indexOf("win") !== -1) platform = "Windows";
+            else if (userAgent.indexOf("mac") !== -1) platform = "Mac";
+            else if (userAgent.indexOf("linux") !== -1) platform = "Linux";
+            else if (userAgent.indexOf("android") !== -1) platform = "Android";
+            else if (userAgent.indexOf("like mac") !== -1) platform = "iOS";
+
+            if (platform === "Windows") {
+                btn.innerHTML = '<span class="icon">⬇️</span> Download for Windows (.msi)';
+                btn.onclick = () => alert("Downloading Vaivi Desktop for Windows...");
+                osInfo.textContent = "Recommended: Tauri app for Windows 10/11";
+            } else if (platform === "Android") {
+                btn.innerHTML = '<span class="icon">📱</span> Get it on Play Store';
+                btn.onclick = () => alert("Opening Play Store...");
+                osInfo.textContent = "You're on Android! Use our native mobile app.";
+            } else {
+                btn.innerHTML = '<span class="icon">⬇️</span> Download App';
+                osInfo.textContent = `Looks like you're on ${platform}. Currently desktop optimized for Windows.`;
+            }
+        });
+    </script>
+</body>
+</html>

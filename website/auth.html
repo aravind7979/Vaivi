@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaivi Authentication</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #1e1e1e;
+            --bg-panel: #2d2d2d;
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .auth-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 10px #22c55e;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 32px;
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: white;
+            font-family: inherit;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 16px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .toggle-link {
+            color: var(--text-muted);
+            margin-top: 24px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .toggle-link:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .error-msg {
+            color: #ef4444;
+            font-size: 14px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .success-msg {
+            color: #22c55e;
+            font-size: 14px;
+            margin-top: 16px;
+            display: none;
+            background: rgba(34, 197, 94, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <div class="logo">
+            <div class="status-dot"></div>
+            Vaivi
+        </div>
+        <div class="subtitle" id="subtitle">Log in to your account</div>
+
+        <form id="authForm" onsubmit="handleAuth(event)">
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="email" required placeholder="you@example.com">
+            </div>
+            
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="password" required placeholder="••••••••">
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="submitBtn">Log In</button>
+            <div class="error-msg" id="errorMsg">Error occurred</div>
+            <div class="success-msg" id="successMsg">Account created successfully! Please log in.</div>
+        </form>
+
+        <div class="toggle-link" onclick="toggleMode()" id="toggleBtn">Don't have an account? Sign up</div>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8000";
+        let isLogin = true;
+
+        const subtitle = document.getElementById('subtitle');
+        const submitBtn = document.getElementById('submitBtn');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const errorMsg = document.getElementById('errorMsg');
+        const successMsg = document.getElementById('successMsg');
+
+        function toggleMode() {
+            isLogin = !isLogin;
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+            if (isLogin) {
+                subtitle.innerText = "Log in to your account";
+                submitBtn.innerText = "Log In";
+                toggleBtn.innerText = "Don't have an account? Sign up";
+            } else {
+                subtitle.innerText = "Create a new account";
+                submitBtn.innerText = "Sign Up";
+                toggleBtn.innerText = "Already have an account? Log in";
+            }
+        }
+
+        async function handleAuth(e) {
+            e.preventDefault();
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Please wait...";
+
+            try {
+                let res;
+                if (isLogin) {
+                    const formData = new FormData();
+                    formData.append('username', email);
+                    formData.append('password', password);
+                    
+                    res = await fetch(`${API_BASE}/api/login`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                } else {
+                    res = await fetch(`${API_BASE}/api/signup`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+                }
+
+                const data = await res.json();
+                
+                if (!res.ok) {
+                    throw new Error(data.detail || "Authentication failed");
+                }
+
+                if (isLogin) {
+                    // Store token and redirect
+                    localStorage.setItem('vaivi_access_token', data.access_token);
+                    window.location.href = "index.html";
+                } else {
+                    // Signup done, show success and switch to login
+                    successMsg.style.display = 'block';
+                    toggleMode(); // Flips isLogin to true
+                    // keep email, clear password
+                    document.getElementById('password').value = '';
+                }
+                
+            } catch (err) {
+                errorMsg.innerText = err.message;
+                errorMsg.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = isLogin ? "Log In" : "Sign Up";
+            }
+        }
+    </script>
+</body>
+</html>

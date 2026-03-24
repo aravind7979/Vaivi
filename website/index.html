@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaivi AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #1e1e1e;
+            --bg-sidebar: #252526;
+            --bg-header: #2d2d2d;
+            --bg-hover: #373737;
+            --text: #ffffff;
+            --text-muted: #a1a1aa;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s;
+        }
+
+        .sidebar-header {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .new-chat-btn {
+            background-color: var(--bg-hover);
+            color: var(--text);
+            border: 1px solid var(--border-color);
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            font-weight: 500;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .new-chat-btn:hover {
+            background-color: #404040;
+        }
+
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .chat-item {
+            padding: 10px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: background 0.2s;
+        }
+        .chat-item:hover, .chat-item.active {
+            background-color: var(--bg-hover);
+            color: var(--text);
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .header {
+            height: 60px;
+            background-color: var(--bg-header);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            box-sizing: border-box;
+        }
+
+        .header-title {
+            font-weight: 600;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 10px #22c55e;
+        }
+
+        .auth-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .auth-btn {
+            background-color: var(--bg-hover);
+            color: var(--text);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .auth-btn:hover {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .auth-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 14px;
+            display: none;
+        }
+        .logout-btn:hover {
+            color: #ef4444;
+            text-decoration: underline;
+        }
+
+        /* CHAT AREA */
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            scroll-behavior: smooth;
+        }
+
+        .messages-wrapper {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .msg-row {
+            display: flex;
+            gap: 16px;
+            width: 100%;
+        }
+
+        .msg-row.ai {
+            justify-content: flex-start;
+        }
+
+        .msg-row.user {
+            justify-content: flex-end;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--bg-header);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .msg-row.user .avatar {
+            display: none;
+        }
+
+        .msg {
+            max-width: 80%;
+            line-height: 1.6;
+            word-wrap: break-word;
+            padding: 12px 16px;
+            border-radius: 8px;
+            background: var(--bg-sidebar);
+        }
+        
+        .msg-row.user .msg {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Markdown styling inside msg */
+        .msg pre {
+            background: #111;
+            padding: 12px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 8px 0;
+        }
+        .msg code {
+            font-family: monospace;
+            background: rgba(0,0,0,0.3);
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: var(--text-muted);
+            font-style: italic;
+            padding: 12px;
+        }
+
+        /* INPUT AREA */
+        .input-area {
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+            background: linear-gradient(to top, var(--bg-main) 80%, transparent);
+            position: relative;
+        }
+
+        .input-wrapper {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--bg-sidebar);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            padding: 8px;
+        }
+
+        .input-wrapper textarea {
+            background: transparent;
+            border: none;
+            color: var(--text);
+            padding: 8px;
+            font-family: inherit;
+            font-size: 16px;
+            resize: none;
+            height: 44px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .input-wrapper textarea:focus {
+            outline: none;
+        }
+
+        .input-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 8px;
+        }
+
+        .tools {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .tool-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        .tool-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text);
+        }
+
+        .tool-btn.active-share {
+            color: #ef4444;
+        }
+
+        .send-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .send-btn:hover {
+            background-color: var(--primary-hover);
+        }
+        .send-btn:disabled {
+            background-color: var(--bg-hover);
+            cursor: not-allowed;
+            color: var(--text-muted);
+        }
+
+        .screen-preview {
+            display: none;
+            width: 100px;
+            height: 60px;
+            background: #000;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        
+        .screen-preview video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-muted);
+            text-align: center;
+        }
+        .empty-state h2 {
+            font-size: 28px;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        #captureCanvas {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <button class="new-chat-btn" id="newChatBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                New chat
+            </button>
+        </div>
+        <div class="chat-list" id="chatList">
+            <!-- Chats populated here -->
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <div class="header-title">
+                <div class="status-dot"></div>
+                Vaivi AI
+            </div>
+            <div class="auth-container">
+                <button class="logout-btn" id="logoutBtn">Log out</button>
+                <div class="auth-icon" id="authIcon" title="Profile">?</div>
+                <button class="auth-btn" id="getStartedBtn" onclick="handleAuthClick()">Get Started</button>
+            </div>
+        </div>
+
+        <div class="chat-area" id="chatArea">
+            <div class="messages-wrapper" id="messagesWrapper">
+                <div class="empty-state" id="emptyState">
+                    <h2>How can I help you today?</h2>
+                    <p>Share your screen or start typing to begin.</p>
+                </div>
+                <!-- Messages go here -->
+            </div>
+            <div class="typing-indicator" id="typingIndicator">Vaivi is thinking...</div>
+        </div>
+
+        <div class="input-area">
+            <div class="input-wrapper">
+                <div class="screen-preview" id="screenPreviewContainer">
+                    <video id="screenVideo" autoplay muted playsinline></video>
+                </div>
+                <textarea id="chatInput" placeholder="Message Vaivi..." rows="1"></textarea>
+                <div class="input-actions">
+                    <div class="tools">
+                        <button class="tool-btn" id="shareScreenBtn" title="Share Screen">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                        </button>
+                    </div>
+                    <button class="send-btn" id="sendBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="captureCanvas"></canvas>
+
+    <script>
+        const API_BASE = "http://localhost:8000";
+        const token = localStorage.getItem('vaivi_access_token');
+        let currentChatId = null;
+        let isScreenShared = false;
+        let screenStream = null;
+
+        // DOM Elements
+        const authIcon = document.getElementById('authIcon');
+        const getStartedBtn = document.getElementById('getStartedBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const chatList = document.getElementById('chatList');
+        const chatArea = document.getElementById('chatArea');
+        const messagesWrapper = document.getElementById('messagesWrapper');
+        const emptyState = document.getElementById('emptyState');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const newChatBtn = document.getElementById('newChatBtn');
+        
+        const shareScreenBtn = document.getElementById("shareScreenBtn");
+        const screenVideo = document.getElementById("screenVideo");
+        const screenPreviewContainer = document.getElementById("screenPreviewContainer");
+        const captureCanvas = document.getElementById("captureCanvas");
+        const ctx = captureCanvas.getContext("2d");
+
+        // Initialization
+        async function init() {
+            if (!token) {
+                // Not logged in, stay on page but show Get Started
+                getStartedBtn.style.display = 'block';
+                authIcon.style.display = 'none';
+                return;
+            }
+
+            try {
+                // Fetch User Profile
+                const userRes = await fetch(`${API_BASE}/api/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!userRes.ok) throw new Error("Token expired");
+                const userData = await userRes.json();
+                
+                // Update Auth UI
+                authIcon.innerText = userData.email.charAt(0).toUpperCase();
+                authIcon.style.display = 'flex';
+                getStartedBtn.style.display = 'none';
+                logoutBtn.style.display = 'block';
+
+                await loadChats();
+            } catch (err) {
+                console.error(err);
+                localStorage.removeItem('vaivi_access_token');
+                window.location.href = 'auth.html';
+            }
+        }
+
+        // Auth Actions
+        function handleAuthClick() {
+            if (!token) window.location.href = 'auth.html';
+            // If logged in, maybe show profile settings modal (future)
+        }
+
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('vaivi_access_token');
+            window.location.href = 'auth.html';
+        });
+
+        // Chat List & History
+        async function loadChats() {
+            const res = await fetch(`${API_BASE}/api/chats`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const chats = await res.json();
+            
+            chatList.innerHTML = '';
+            chats.forEach(chat => {
+                const div = document.createElement('div');
+                div.className = 'chat-item' + (chat.id === currentChatId ? ' active' : '');
+                div.innerText = chat.title;
+                div.onclick = () => selectChat(chat.id);
+                chatList.appendChild(div);
+            });
+            
+            // Auto open first chat if none selected
+            if (!currentChatId && chats.length > 0) {
+                selectChat(chats[0].id);
+            }
+        }
+
+        async function createNewChat(title) {
+            const res = await fetch(`${API_BASE}/api/chats`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({ title: title })
+            });
+            const chat = await res.json();
+            currentChatId = chat.id;
+            await loadChats();
+            selectChat(chat.id);
+        }
+
+        newChatBtn.addEventListener('click', () => {
+            currentChatId = null;
+            emptyState.style.display = 'flex';
+            const oldMsgs = messagesWrapper.querySelectorAll('.msg-row');
+            oldMsgs.forEach(m => m.remove());
+            loadChats(); // removes active class
+        });
+
+        async function selectChat(id) {
+            currentChatId = id;
+            emptyState.style.display = 'none';
+            loadChats(); // updates active class highlight
+
+            // Fetch messages
+            const res = await fetch(`${API_BASE}/api/chats/${id}/messages`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const msgs = await res.json();
+
+            // Clear old messages
+            const oldMsgs = messagesWrapper.querySelectorAll('.msg-row');
+            oldMsgs.forEach(m => m.remove());
+
+            msgs.forEach(m => addMessageToUI(m.content, m.role));
+            scrollToBottom();
+        }
+
+        // Auto-resize textarea
+        chatInput.addEventListener('input', function() {
+            this.style.height = '44px';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        // Messaging
+        function addMessageToUI(text, role) {
+            const row = document.createElement('div');
+            row.className = `msg-row ${role}`;
+            
+            let formattedText = text
+                .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                .replace(/\*\*([^\*]+)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n/g, '<br>');
+
+            row.innerHTML = `
+                <div class="avatar">✨</div>
+                <div class="msg">${formattedText}</div>
+            `;
+            messagesWrapper.appendChild(row);
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        async function handleSend() {
+            if (!token) {
+                alert("Please click 'Get Started' to log in and chat with Vaivi!");
+                return;
+            }
+
+            const query = chatInput.value.trim();
+            if (!query && !isScreenShared) return;
+
+            // If it's a new chat, create it on first message
+            if (!currentChatId) {
+                const title = query ? query.substring(0, 30) : "Screen Session";
+                await createNewChat(title);
+            } else {
+                emptyState.style.display = 'none';
+            }
+
+            if (query) addMessageToUI(query, "user");
+            chatInput.value = "";
+            chatInput.style.height = '44px';
+
+            typingIndicator.style.display = "block";
+            sendBtn.disabled = true;
+            chatInput.disabled = true;
+            scrollToBottom();
+
+            try {
+                let responseText = "";
+
+                if (isScreenShared && screenStream) {
+                    // Send with image
+                    captureCanvas.width = screenVideo.videoWidth;
+                    captureCanvas.height = screenVideo.videoHeight;
+                    ctx.drawImage(screenVideo, 0, 0, captureCanvas.width, captureCanvas.height);
+                    
+                    const blob = await new Promise(resolve => captureCanvas.toBlob(resolve, 'image/jpeg', 0.8));
+                    
+                    const formData = new FormData();
+                    formData.append("image", blob, "screen.jpg");
+                    if (query) formData.append("query", query);
+                    formData.append("chat_id", currentChatId);
+
+                    const res = await fetch(`${API_BASE}/api/analyze-screen`, {
+                        method: "POST",
+                        headers: { 'Authorization': `Bearer ${token}` },
+                        body: formData
+                    });
+
+                    if (!res.ok) throw new Error("Backend response error");
+                    const data = await res.json();
+                    responseText = data.response;
+                } else {
+                    // Text only
+                    const res = await fetch(`${API_BASE}/api/ask`, {
+                        method: "POST",
+                        headers: { 
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ query: query, chat_id: currentChatId })
+                    });
+                    
+                    if (!res.ok) throw new Error("Backend response error");
+                    const data = await res.json();
+                    responseText = data.response;
+                }
+
+                addMessageToUI(responseText, "ai");
+            } catch (err) {
+                console.error(err);
+                addMessageToUI("Sorry, I encountered an error connecting to the backend.", "ai");
+            } finally {
+                typingIndicator.style.display = "none";
+                sendBtn.disabled = false;
+                chatInput.disabled = false;
+                chatInput.focus();
+                scrollToBottom();
+            }
+        }
+
+        sendBtn.addEventListener('click', handleSend);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+            }
+        });
+
+        // Screen Sharing
+        shareScreenBtn.addEventListener('click', async () => {
+            if (!token) {
+                alert("Please click 'Get Started' to log in and share your screen!");
+                return;
+            }
+
+            if (isScreenShared) {
+                // Stop
+                screenStream.getTracks().forEach(track => track.stop());
+                isScreenShared = false;
+                screenVideo.srcObject = null;
+                shareScreenBtn.classList.remove('active-share');
+                screenPreviewContainer.style.display = "none";
+                return;
+            }
+
+            try {
+                screenStream = await navigator.mediaDevices.getDisplayMedia({
+                    video: { cursor: "always" },
+                    audio: false
+                });
+
+                screenVideo.srcObject = screenStream;
+                isScreenShared = true;
+                
+                screenStream.getVideoTracks()[0].onended = () => {
+                    if (isScreenShared) shareScreenBtn.click();
+                };
+
+                shareScreenBtn.classList.add('active-share');
+                screenPreviewContainer.style.display = "block";
+
+            } catch (err) {
+                console.error(err);
+                if (err.name !== "NotAllowedError") alert("Failed to share screen.");
+            }
+        });
+
+        // Run Init
+        init();
+    </script>
+</body>
+</html>

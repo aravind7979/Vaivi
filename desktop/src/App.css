@@ -1,0 +1,141 @@
+:root {
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.87);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: transparent;
+  overflow: hidden;
+}
+
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: rgba(30, 30, 30, 0.85); /* Glassmorphism background */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  /* Make the header draggable for Tauri window */
+  user-select: none;
+  -webkit-app-region: drag;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 14px;
+  color: #a0c3ff;
+  letter-spacing: 0.5px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 16px;
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+
+.close-btn:hover {
+  color: white;
+}
+
+.chat-area {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.message {
+  padding: 10px 14px;
+  border-radius: 12px;
+  max-width: 85%;
+  font-size: 14px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.message.user {
+  align-self: flex-end;
+  background: #3a6bfa;
+  color: white;
+  border-bottom-right-radius: 2px;
+}
+
+.message.ai {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.1);
+  border-bottom-left-radius: 2px;
+}
+
+.message.ai.loading {
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.input-area {
+  display: flex;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  gap: 8px;
+}
+
+input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.3);
+  color: white;
+  outline: none;
+  font-size: 14px;
+}
+
+input:focus {
+  border-color: #3a6bfa;
+}
+
+button {
+  padding: 0 16px;
+  border-radius: 20px;
+  border: none;
+  background: #3a6bfa;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+button:hover {
+  background: #4a7bfa;
+}
+
+button:disabled {
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.3);
+  cursor: not-allowed;
+}
