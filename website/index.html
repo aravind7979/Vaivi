@@ -448,7 +448,8 @@
     <canvas id="captureCanvas"></canvas>
 
     <script>
-        const API_BASE = "http://localhost:8000";
+        // Use Vercel proxy if on HTTPS, otherwise use direct AWS IP
+        const API_BASE = window.location.protocol === 'https:' ? '' : 'http://13.51.107.61:8000';
         const token = localStorage.getItem('vaivi_access_token');
         let currentChatId = null;
         let isScreenShared = false;
