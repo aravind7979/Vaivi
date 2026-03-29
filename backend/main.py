@@ -125,6 +125,19 @@ async def get_chat_messages(chat_id: int, db: Session = Depends(get_db), current
     
     return chat.messages
 
+@app.delete("/api/chats/{chat_id}")
+async def delete_chat(chat_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
+    chat = db.query(models.Chat)\
+        .filter(models.Chat.id == chat_id, models.Chat.user_id == current_user.id)\
+        .first()
+    
+    if not chat:
+        raise HTTPException(status_code=404, detail="Chat not found")
+    
+    db.delete(chat)
+    db.commit()
+    return {"status": "deleted"}
+
 # --- AI Endpoints ---
 @app.post("/api/ask")
 async def ask_assistant(request: AskRequest, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
@@ -175,9 +188,9 @@ async def ask_assistant(request: AskRequest, db: Session = Depends(get_db), curr
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/api/analyze-screen")
-async def analyze_screen(
-    image: UploadFile = File(...),
+@app.post("/api/chat-with-media")
+async def chat_with_media(
+    files: list[UploadFile] = File(...),
     query: str = Form(None),
     chat_id: int = Form(None),
     db: Session = Depends(get_db),
@@ -199,17 +212,21 @@ async def analyze_screen(
                 db.add(models.Message(chat_id=chat.id, role="user", content=f"[Screen] {query}"))
                 db.commit()
 
-        image_bytes = await image.read()
-        pil_image = Image.open(io.BytesIO(image_bytes))
+        # Read all files
+        pil_images = []
+        for file in files:
+            image_bytes = await file.read()
+            pil_images.append(Image.open(io.BytesIO(image_bytes)))
 
         system_prompt = (
-            "You are Vaivi. Analyze this screen, detect UI elements and suggest actions."
+            "You are Vaivi, an AI assistant capable of analyzing images and screens."
         )
 
         if query:
             system_prompt += f"\nUser Query: {query}"
 
-        response = vision_model.generate_content([system_prompt, pil_image])
+        # Pass prompt and all images
+        response = vision_model.generate_content([system_prompt] + pil_images)
         ai_text = response.text
 
         if chat:
