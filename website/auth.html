@@ -226,7 +226,13 @@
                     });
                 }
 
-                const data = await res.json();
+                let data;
+                const textData = await res.text();
+                try {
+                    data = JSON.parse(textData);
+                } catch (e) {
+                    throw new Error(`Server Error: ${textData || "Invalid Response"}`);
+                }
                 
                 if (!res.ok) {
                     throw new Error(data.detail || "Authentication failed");

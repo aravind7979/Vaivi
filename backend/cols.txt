@@ -1,0 +1,5 @@
+0 | id | INTEGER
+1 | email | VARCHAR
+2 | hashed_password | VARCHAR
+3 | shortcut_keys | VARCHAR
+4 | created_at | TIMESTAMP
