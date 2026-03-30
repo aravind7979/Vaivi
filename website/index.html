@@ -468,7 +468,7 @@
 
         <div class="chat-area" id="chatArea">
             <div class="empty-state" id="emptyState">
-                <h1>What can I help with?</h1>
+                <h1 style="font-size: 28px; line-height: 1.4;">Hey, talk with Vaivi.<br>I can see, understand, and help.</h1>
                 <button class="auth-btn" id="emptyStateBtn" onclick="handleAuthClick()">Get Started</button>
             </div>
             <div class="messages-wrapper" id="messagesWrapper">
@@ -532,14 +532,34 @@
     </div>
 
     <div class="modal-overlay" id="settingsModal">
-        <div class="modal">
-            <button class="modal-close" onclick="closeModals()">×</button>
-            <h2>Custom Instructions & Settings</h2>
-            <p style="font-size:14px; color:var(--text-muted); margin-bottom: 8px;">What would you like Vaivi to know about you to provide better responses?</p>
-            <textarea id="customInstructions" class="settings-textarea" placeholder="E.g., I'm a software developer. Keep answers concise."></textarea>
+        <div class="modal" style="width: 350px; padding: 0; overflow: hidden; position: relative;">
+            <button class="modal-close" style="position: absolute; right: 16px; top: 16px; z-index: 10;" onclick="closeModals()">×</button>
+            <div style="padding: 24px; display: flex; flex-direction: column; align-items: center; border-bottom: 1px solid var(--border-color); position: relative;">
+                <div style="color: var(--text-muted); font-size: 13px; margin-bottom: 24px;" id="profileEmail"></div>
+                
+                <div style="position: relative; width: 80px; height: 80px; margin-bottom: 16px;">
+                    <img id="profileImageFull" src="" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: none;">
+                    <div id="profileImageFallback" style="width: 100%; height: 100%; border-radius: 50%; background: #ec4899; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: white;">?</div>
+                    
+                    <button onclick="document.getElementById('profilePicInput').click()" style="position: absolute; bottom: -4px; right: -4px; border-radius: 50%; background: var(--bg-sidebar); border: 1px solid var(--border-color); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text); padding: 0; font-size: 12px; transition: background 0.2s;" title="Change profile photo">📷</button>
+                    <input type="file" id="profilePicInput" accept="image/*" style="display: none;" onchange="handleProfilePic(event)">
+                </div>
+                
+                <h2 style="margin: 0; font-size: 20px; font-weight: 500;" id="profileName">Hi!</h2>
+            </div>
             
-            <p style="font-size:14px; margin-bottom: 8px;">Actions</p>
-            <button class="auth-btn" style="background:#ef4444; width:100%; border-radius:8px;" onclick="logout()">Log Out</button>
+            <div style="padding: 12px 16px;">
+                <div style="padding: 12px; display: flex; align-items: center; gap: 12px; cursor: pointer; border-radius: 8px; transition: background 0.2s;" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'" onclick="alert('Settings modal placeholder')">
+                    <span style="font-size: 18px;">⚙️</span> <span style="font-size: 14px; font-weight: 500;">Settings</span>
+                </div>
+                <div style="padding: 12px; display: flex; align-items: center; gap: 12px; cursor: pointer; border-radius: 8px; transition: background 0.2s;" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'" onclick="logout()">
+                    <span style="font-size: 18px;">🚪</span> <span style="font-size: 14px; font-weight: 500;">Sign out</span>
+                </div>
+            </div>
+            
+            <div style="padding: 16px; text-align: center; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border-color);">
+                Privacy Policy • Terms of Service
+            </div>
         </div>
     </div>
 
@@ -603,9 +623,24 @@
                 
                 // Show avatar initial
                 const userData = await userRes.json();
-                authIcon.innerText = (userData.email || "U")[0].toUpperCase();
                 
-                document.getElementById('customInstructions').value = localStorage.getItem('vaivi_context') || '';
+                document.getElementById('profileEmail').innerText = userData.email;
+                document.getElementById('profileName').innerText = `Hi, ${userData.email.split('@')[0]}!`;
+                
+                const savedPic = localStorage.getItem('vaivi_profile_pic');
+                if (savedPic) {
+                    authIcon.style.backgroundImage = `url(${savedPic})`;
+                    authIcon.style.backgroundSize = 'cover';
+                    authIcon.style.backgroundPosition = 'center';
+                    authIcon.innerText = '';
+                    
+                    document.getElementById('profileImageFull').src = savedPic;
+                    document.getElementById('profileImageFull').style.display = 'block';
+                    document.getElementById('profileImageFallback').style.display = 'none';
+                } else {
+                    authIcon.innerText = (userData.email || "U")[0].toUpperCase();
+                    document.getElementById('profileImageFallback').innerText = (userData.email || "U")[0].toUpperCase();
+                }
                 
                 await loadChats();
             } catch (err) {
@@ -622,10 +657,21 @@
         // --- Modals & Sidebar ---
         document.getElementById('hamburgerBtn').addEventListener('click', () => sidebar.classList.toggle('open'));
         
+        function handleProfilePic(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const base64 = event.target.result;
+                localStorage.setItem('vaivi_profile_pic', base64);
+                window.location.reload();
+            };
+            reader.readAsDataURL(file);
+        }
+
         function closeModals() {
             document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
-            // Save instructions on close
-            localStorage.setItem('vaivi_context', document.getElementById('customInstructions').value);
+            // Instruction saving removed
         }
         function openShortcutsModal() { document.getElementById('shortcutsModal').style.display = 'flex'; }
         function openInstructionsModal() { document.getElementById('settingsModal').style.display = 'flex'; }
@@ -758,31 +804,38 @@
         });
 
         // --- Dictation & Live Chat Architecture ---
+        let liveSilenceTimer = null;
+        let finalDictationText = "";
+
         if (SpeechRecognition) {
             recognizer = new SpeechRecognition();
-            recognizer.continuous = false;
+            recognizer.continuous = true;
             recognizer.interimResults = true;
             
             recognizer.onresult = (event) => {
-                let text = "";
-                for(let i=0; i<event.results.length; i++) text += event.results[i][0].transcript;
-                chatInput.value = text;
+                let interim = "";
+                for(let i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) finalDictationText += event.results[i][0].transcript;
+                    else interim += event.results[i][0].transcript;
+                }
+                chatInput.value = finalDictationText + interim;
+                
+                // Voice Activity Detection (VAD) for Live Mode
+                if (isLiveMode && (finalDictationText || interim)) {
+                    clearTimeout(liveSilenceTimer);
+                    liveSilenceTimer = setTimeout(() => {
+                        if(chatInput.value.trim().length > 1) {
+                            recognizer.stop(); // This triggers onend, handling logic 
+                            handleSend();
+                        }
+                    }, 2500); // 2.5 second silence threshold
+                }
             };
 
             recognizer.onend = () => {
+                // Keep Dictation alive natively if user didn't stop it!
                 if (isDictating && !isLiveMode) {
-                    document.getElementById('dictateBtn').classList.remove('active-dictate');
-                    isDictating = false;
-                }
-                
-                // If Live Mode and we stopped speaking, auto-send if there's text!
-                if (isLiveMode && !isSpeakingTTS) {
-                    if (chatInput.value.trim().length > 1) {
-                        handleSend(); // Send to backend!
-                    } else {
-                        // Restart listening loop if nothing significant was said
-                        try { recognizer.start(); } catch(e){}
-                    }
+                    try { recognizer.start(); } catch(e){}
                 }
             };
         }
@@ -791,8 +844,18 @@
             if(!recognizer) return alert("Speech recognition not supported in this browser.");
             if(isLiveMode) document.getElementById('liveChatBtn').click(); // Turn off live mode safely
             
-            if(isDictating) { recognizer.stop(); }
-            else { chatInput.value = ''; recognizer.start(); isDictating = true; document.getElementById('dictateBtn').classList.add('active-dictate'); }
+            if(isDictating) { 
+                isDictating = false; 
+                recognizer.stop(); 
+                document.getElementById('dictateBtn').classList.remove('active-dictate');
+            }
+            else { 
+                chatInput.value = ''; 
+                finalDictationText = '';
+                isDictating = true; 
+                recognizer.start(); 
+                document.getElementById('dictateBtn').classList.add('active-dictate'); 
+            }
         });
 
         document.getElementById('liveChatBtn').addEventListener('click', () => {
@@ -811,8 +874,9 @@
                 isDictating = false;
                 document.getElementById('dictateBtn').classList.remove('active-dictate');
                 chatInput.value = '';
+                finalDictationText = '';
                 btn.classList.add('active-live');
-                recognizer.start();
+                try { recognizer.start(); } catch(e){}
             }
         });
 
@@ -830,6 +894,7 @@
                 // Once done speaking, immediately resume listening if still in Live Mode!
                 if(isLiveMode) {
                     chatInput.value = '';
+                    finalDictationText = '';
                     try { recognizer.start(); } catch(e){}
                 }
             };
@@ -876,7 +941,7 @@
             }
 
             if (query) addMessageToUI(query, "user");
-            chatInput.value = ""; chatInput.style.height = '24px';
+            chatInput.value = ""; finalDictationText = ""; chatInput.style.height = '24px';
             document.getElementById('typingIndicator').style.display = "block";
             document.getElementById('sendBtn').disabled = true;
             scrollToBottom();
