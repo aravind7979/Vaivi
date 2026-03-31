@@ -44,7 +44,7 @@ function App() {
       }
 
       // 2. Send to AWS FastAPI backend
-      const backendRes = await fetch("http://13.51.107.61:8000/api/analyze-screen", {
+      const backendRes = await fetch("http://51.21.31.101:8000/api/analyze-screen", {
         method: "POST",
         body: formData,
       });
@@ -68,7 +68,7 @@ function App() {
   const askText = async (text: string) => {
     setLoading(true);
     try {
-      const backendRes = await fetch("http://13.51.107.61:8000/api/ask", {
+      const backendRes = await fetch("http://51.21.31.101:8000/api/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: text }),
