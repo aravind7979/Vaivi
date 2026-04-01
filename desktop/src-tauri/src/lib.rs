@@ -1,22 +1,23 @@
 use tauri::{Manager, Emitter};
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
 use screenshots::Screen;
-use base64::{Engine as _, engine::general_purpose};
+use image::{ImageBuffer, Rgba};
+use std::io::Cursor;
 
 #[tauri::command]
-fn take_screenshot() -> Result<String, String> {
+fn take_screenshot() -> Result<Vec<u8>, String> {
     let screens = Screen::all().map_err(|e| e.to_string())?;
-    
-    // Just take from the first screen for simplicity
-    if let Some(screen) = screens.first() {
-        let image = screen.capture().map_err(|e| e.to_string())?;
-        let buffer = image.to_png().map_err(|e| e.to_string())?;
-        
-        let b64 = general_purpose::STANDARD.encode(&buffer);
-        Ok(format!("data:image/png;base64,{}", b64))
-    } else {
-        Err("No screens found".to_string())
-    }
+    let screen = screens.get(0).ok_or("No screen found")?;
+
+    let image = screen.capture().map_err(|e| e.to_string())?;
+
+    // Convert to PNG
+    let mut buffer = Cursor::new(Vec::new());
+    image::DynamicImage::ImageRgba8(image)
+        .write_to(&mut buffer, image::ImageOutputFormat::Png)
+        .map_err(|e| e.to_string())?;
+
+    Ok(buffer.into_inner())
 }
 
 #[tauri::command]
