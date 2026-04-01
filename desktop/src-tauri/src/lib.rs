@@ -43,8 +43,6 @@ pub fn run() {
                                 } else {
                                     let _ = window.show();
                                     let _ = window.set_focus();
-                                    // Optionally emit an event to tell frontend to capture and analyze
-                                    let _ = app.emit("shortcut-triggered", ());
                                 }
                             }
                         }
