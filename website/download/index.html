@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #121212; /* Light black as requested */
+            --bg-dark: #121212;
+            /* Light black as requested */
             --bg-panel: rgba(30, 30, 35, 0.7);
             --text-main: #ffffff;
             --text-muted: #a1a1aa;
@@ -86,7 +88,7 @@
             background: #22c55e;
             box-shadow: 0 0 10px #22c55e;
         }
-        
+
         nav a {
             color: var(--text-muted);
             text-decoration: none;
@@ -154,12 +156,13 @@
         }
 
         .btn-outline {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
             color: var(--text-main);
             border: 1px solid var(--border-color);
         }
+
         .btn-outline:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .os-info {
@@ -169,6 +172,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="background-effects">
         <div class="glow-orb"></div>
@@ -188,23 +192,24 @@
     <div class="download-box">
         <h1>Download Vaivi</h1>
         <p>Get the native application for the best screen-understanding experience.</p>
-        
+
         <button class="btn btn-primary" id="download-btn">
             <span class="icon">⬇️</span> Download for Windows
         </button>
-        
+
         <button class="btn btn-outline" onclick="alert('Android APK download starting...')">
             <span class="icon">📱</span> Download Android APK
         </button>
-        
+
         <div class="os-info" id="os-info">Checking your OS...</div>
     </div>
-
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const btn = document.getElementById("download-btn");
             const osInfo = document.getElementById("os-info");
-            
+
+            const DOWNLOAD_URL = "https://github.com/aravind7979/Vaivi/releases/download/v1.0.0/vaivi-setup-v1.0.0.exe";
+
             const userAgent = navigator.userAgent.toLowerCase();
             let platform = "Unknown";
 
@@ -215,18 +220,26 @@
             else if (userAgent.indexOf("like mac") !== -1) platform = "iOS";
 
             if (platform === "Windows") {
-                btn.innerHTML = '<span class="icon">⬇️</span> Download for Windows (.msi)';
-                btn.onclick = () => alert("Downloading Vaivi Desktop for Windows...");
-                osInfo.textContent = "Recommended: Tauri app for Windows 10/11";
-            } else if (platform === "Android") {
+                btn.innerHTML = '<span class="icon">⬇️</span> Download for Windows (.exe)';
+                btn.onclick = () => {
+                    window.location.href = DOWNLOAD_URL;
+                };
+                osInfo.textContent = "Recommended: Vaivi Desktop for Windows 10/11";
+            }
+            else if (platform === "Android") {
                 btn.innerHTML = '<span class="icon">📱</span> Get it on Play Store';
                 btn.onclick = () => alert("Opening Play Store...");
                 osInfo.textContent = "You're on Android! Use our native mobile app.";
-            } else {
+            }
+            else {
                 btn.innerHTML = '<span class="icon">⬇️</span> Download App';
-                osInfo.textContent = `Looks like you're on ${platform}. Currently desktop optimized for Windows.`;
+                btn.onclick = () => {
+                    window.location.href = DOWNLOAD_URL;
+                };
+                osInfo.textContent = `Looks like you're on ${platform}. Currently optimized for Windows.`;
             }
         });
     </script>
 </body>
+
 </html>
