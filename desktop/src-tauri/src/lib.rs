@@ -1,4 +1,5 @@
 use tauri::Manager;
+use tauri::Emitter;
 use tauri::RunEvent;
 use tauri_plugin_autostart::ManagerExt;
 use tauri_plugin_updater::UpdaterExt;
