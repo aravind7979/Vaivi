@@ -139,3 +139,24 @@ button:disabled {
   color: rgba(255,255,255,0.3);
   cursor: not-allowed;
 }
+
+.update-toast {
+  position: absolute;
+  top: 10px;
+  background: #22c55e;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 1000;
+  animation: slideDown 0.3s ease-out;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@keyframes slideDown {
+  from { top: -50px; opacity: 0; }
+  to { top: 10px; opacity: 1; }
+}

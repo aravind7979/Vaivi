@@ -14,6 +14,7 @@ function App() {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [updateStatus, setUpdateStatus] = useState<string | null>(null);
 
   useEffect(() => {
     // Listen for Alt+V shortcut triggered in backend
@@ -22,8 +23,13 @@ function App() {
       analyzeScreen();
     });
 
+    const unlistenUpdate = listen<string>("update-status", (event) => {
+      setUpdateStatus(event.payload);
+    });
+
     return () => {
       unlisten.then((f) => f());
+      unlistenUpdate.then((f) => f());
     };
   }, []);
 
@@ -98,6 +104,11 @@ function App() {
 
   return (
     <div className="container">
+      {updateStatus && (
+        <div className="update-toast">
+          {updateStatus}
+        </div>
+      )}
       <div className="header">
         <div className="title">Vaivi Assistant</div>
         <button className="close-btn" onClick={handleHide}>✖</button>

@@ -1,0 +1,21 @@
+﻿Please enter a password to protect the secret key.
+
+<empty>
+
+<empty>
+Deriving a key from the password in order to encrypt the secret key... done
+
+Your keys were generated successfully!
+
+Private: (Keep it secret!)
+dW50cnVzdGVkIGNvbW1lbnQ6IHJzaWduIGVuY3J5cHRlZCBzZWNyZXQga2V5ClJXUlRZMEl5RC8rM2lkSDVkTVBUeGlPczdHV2FKcHg0WkdsQWJhTVJybm42dFI5MWtEZ0FBQkFBQUFBQUFBQUFBQUlBQUFBQXNYTHRObjZwOEhLMFFKcmFNallzbm03Rlo3WEtKOFdiWFZ2aGR3Y3Y1aXZmY2UwOEk2d001ZVlLbUNUUkU2eGpSc09tUGpxWDZqbTFwWEJSMklSaGd3dkF2VjE2YklLRksrdzVBWjZlcyt5RExVd0xkNFFDZStlTnkzK2NYWUV5QWpqMXMxMUhkREE9Cg==
+
+Public:
+dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEU3MjVEQ0I5RkIzRDZFNDUKUldSRmJqMzd1ZHdsNTJlVStncWdIRVhmK2lmYmY0U0FKcmNDQ1RkOWdOYmN3KzY2blcwRW9DSFMK
+
+Environment variables used to sign:
+- `TAURI_SIGNING_PRIVATE_KEY`: String of your private key
+- `TAURI_SIGNING_PRIVATE_KEY_PATH`: Path to your private key file
+- `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`:  Your private key password (optional if key has no password)
+
+ATTENTION: If you lose your private key OR password, you'll not be able to sign your update package and updates will not work
