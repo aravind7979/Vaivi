@@ -1,0 +1,74 @@
+[
+  {
+    "document_id": "sysdesign_003_load_balancing",
+    "query_examples": [
+      "What is load balancing in system design?",
+      "How do load balancers work?",
+      "Difference between L4 and L7 load balancers",
+      "Load balancing strategies: round robin vs least connections",
+      "How do I handle sticky sessions with a load balancer?"
+    ],
+    "title": "Load Balancing in Distributed Systems",
+    "domain": "system_design",
+    "capability_type": "explanation",
+    "intent_type": "informational",
+    "context_variants": [
+      "Beginner: developer who just built their first web app and is wondering how to scale",
+      "Expert: engineer designing a high-availability architecture for millions of users",
+      "Confused: user unsure of the difference between DNS-level and application-level load balancing",
+      "Time-constrained: someone preparing for a system design interview"
+    ],
+    "content": "A load balancer distributes incoming network traffic across multiple servers to prevent any single server from becoming a bottleneck. It is a fundamental component of scalable, fault-tolerant systems.\n\n**Why it matters:** Without load balancing, all traffic hits one server. When traffic spikes or that server fails, the service goes down. Load balancing solves both scalability and availability.\n\n**Types of load balancers:**\n- **Layer 4 (Transport):** Routes traffic based on IP and TCP/UDP port. Fast, low overhead, no content inspection.\n- **Layer 7 (Application):** Routes based on HTTP headers, cookies, URLs, or request content. More powerful (can route /api to one server cluster and /static to another).\n\n**Common algorithms:**\n- **Round Robin:** Requests cycle through servers equally. Simple, works well when servers are identical.\n- **Weighted Round Robin:** Servers with more capacity get more requests.\n- **Least Connections:** New request goes to the server with the fewest active connections. Better for variable-length requests.\n- **IP Hash:** Same client IP always goes to the same server (useful for sticky sessions without server-side session replication).\n- **Least Response Time:** Routes to the server with the lowest latency.\n\n**Health checks:** Load balancers continuously probe backend servers. Unhealthy servers are automatically removed from rotation, giving the system self-healing capability.",
+    "code_examples": [
+      "# NGINX round-robin load balancing config\nupstream backend {\n    server app1.example.com:8080;\n    server app2.example.com:8080;\n    server app3.example.com:8080;\n}\n\nserver {\n    listen 80;\n    location / {\n        proxy_pass http://backend;\n    }\n}\n\n# Least connections strategy\nupstream backend {\n    least_conn;\n    server app1.example.com:8080;\n    server app2.example.com:8080;\n}"
+    ],
+    "step_by_step_explanation": [
+      "Step 1: Client sends a request to the load balancer's IP address (or DNS name)",
+      "Step 2: Load balancer selects a backend server using its configured algorithm (e.g., round robin)",
+      "Step 3: Load balancer forwards the request to the selected server, possibly rewriting headers",
+      "Step 4: The backend server processes the request and returns a response",
+      "Step 5: Load balancer forwards the response back to the client",
+      "Step 6: Concurrently, the LB runs health checks — removing failed servers and re-adding recovered ones"
+    ],
+    "key_concepts": [
+      "Horizontal scaling", "High availability", "Health checks", "Round robin", "Sticky sessions",
+      "SSL termination", "Layer 4 vs Layer 7", "Upstream servers", "Failover", "Reverse proxy",
+      "Active-passive vs active-active", "Global Server Load Balancing (GSLB)"
+    ],
+    "common_misconceptions": [
+      "A load balancer eliminates downtime — it reduces it but the LB itself is a single point of failure unless deployed in HA pairs",
+      "Round robin is always sufficient — for sessions requiring state, round robin can route a user to a server that doesn't have their session",
+      "Load balancers only work for HTTP traffic — they also work for TCP, UDP, WebSockets, gRPC, etc.",
+      "More servers always means better performance — the bottleneck might be the database, not the app servers"
+    ],
+    "edge_cases": [
+      "Session affinity (sticky sessions): if a user must always hit the same server, use IP hash or cookie-based routing",
+      "WebSocket connections: long-lived connections need the LB to support connection persistence, not just per-request routing",
+      "SSL/TLS termination: the LB can decrypt traffic, reducing load on app servers, but requires careful certificate management",
+      "Zero-downtime deployments: use connection draining — stop sending new requests to a server being updated, let existing ones finish",
+      "Geographic load balancing: DNS-based GSLB routes users to the nearest data center"
+    ],
+    "real_world_examples": [
+      "Netflix uses Zuul and Eureka for application-layer load balancing across microservices",
+      "AWS Elastic Load Balancer (ELB) automatically distributes traffic across EC2 instances",
+      "Cloudflare's Argo routing uses real-time latency data to route requests globally",
+      "Google's Maglev paper describes a hardware-level load balancer handling millions of packets per second"
+    ],
+    "analogies": [
+      "A load balancer is like a maître d' at a restaurant — they direct each arriving customer to an open table rather than letting everyone pile into the same corner",
+      "Health checks are like the maître d' keeping track of which tables are open vs occupied — they won't seat you at a table that's out of service"
+    ],
+    "metadata": {
+      "difficulty_level": "intermediate",
+      "tags": ["load balancing", "system design", "scalability", "high availability", "distributed systems", "NGINX", "AWS"],
+      "prerequisites": ["Basic networking (IP, TCP/UDP, HTTP)", "Client-server architecture", "What a server is"]
+    },
+    "input_type": "text",
+    "output_type": "structured",
+    "safety_notes": "",
+    "allowed_scope": "Covers conceptual explanation, algorithm comparison, configuration examples (NGINX, HAProxy), and architecture patterns. Does not provide specific capacity planning numbers without knowing traffic patterns.",
+    "summary": "A load balancer distributes traffic across multiple servers using algorithms like round robin or least connections, improving scalability and availability. Layer 7 LBs offer content-aware routing while Layer 4 LBs provide lower-overhead transport-level routing.",
+    "related_topics": ["Horizontal vs vertical scaling", "Reverse proxy", "API gateway", "CDN", "Service mesh", "Circuit breaker pattern", "DNS load balancing"],
+    "response_style": "explanation"
+  }
+]

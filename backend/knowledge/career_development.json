@@ -1,0 +1,73 @@
+[
+  {
+    "document_id": "career_010_resume_writing",
+    "query_examples": [
+      "How do I write a strong resume?",
+      "What should I include in my resume for a software engineering job?",
+      "How do I quantify achievements on my resume?",
+      "My resume is getting rejected by ATS systems — how do I fix it?",
+      "How long should my resume be?"
+    ],
+    "title": "Resume Writing for Modern Job Applications",
+    "domain": "career_development",
+    "capability_type": "planning",
+    "intent_type": "transactional",
+    "context_variants": [
+      "Beginner: college student applying for their first internship",
+      "Expert: senior professional with 15 years of experience restructuring for a career pivot",
+      "Confused: user whose resume is well-written but getting no responses",
+      "Time-constrained: applicant who needs to apply by tomorrow"
+    ],
+    "content": "A strong resume tells a targeted story: who you are, what you've achieved, and why you're the right fit for *this specific role*. Most resumes fail not because of poor formatting but because they describe responsibilities instead of achievements.\n\n**Core sections:**\n1. **Contact:** Name, email, phone, LinkedIn, GitHub (if technical). No photo (in US), no address needed.\n2. **Summary (optional but powerful):** 2–3 lines: who you are + your most relevant credential + what you're seeking. Tailor per application.\n3. **Experience:** Most critical section. Format: Company | Title | Dates. Under each: 3–5 bullet points describing achievements, not duties.\n4. **Skills:** Technical skills (tools, languages, frameworks). Keep soft skills off — they're expected.\n5. **Education:** Degree, institution, graduation year. GPA only if ≥ 3.5 and within last 5 years.\n6. **Projects / Certifications:** Especially important for early-career or career changers.\n\n**The achievement formula:** Start with a strong verb + quantified result + context\n- Weak: 'Responsible for managing social media accounts'\n- Strong: 'Grew Instagram following by 340% in 6 months by redesigning content strategy, generating $12K in attributed sales'\n\n**ATS (Applicant Tracking System):** Most large companies use ATS to filter resumes before human review. Use keywords from the job description verbatim. Avoid tables, columns, text boxes, and graphics — ATS parsers fail on these.",
+    "code_examples": [],
+    "step_by_step_explanation": [
+      "Step 1: Study the job description — highlight required skills and keywords; these must appear in your resume",
+      "Step 2: Structure with the most important section first — usually Experience (or Education for new grads)",
+      "Step 3: Rewrite each bullet as: [Action verb] + [What you did] + [Measurable result]",
+      "Step 4: Quantify everything possible — percentages, dollar amounts, time saved, users reached",
+      "Step 5: Format for ATS — single column, standard fonts (Arial, Calibri), no images or tables",
+      "Step 6: Tailor the summary and top skills section to each specific job application",
+      "Step 7: Proofread for typos — a single typo can disqualify an otherwise strong candidate"
+    ],
+    "key_concepts": [
+      "ATS (Applicant Tracking System)", "Action verbs", "Quantified achievements", "Tailoring", "Keywords",
+      "STAR format (Situation, Task, Action, Result)", "Reverse chronological order", "White space",
+      "One-page vs two-page", "Hard skills vs soft skills", "LinkedIn optimization", "Cover letter"
+    ],
+    "common_misconceptions": [
+      "A longer resume demonstrates more experience — one page is standard for under 10 years of experience; two pages for senior roles; anything more is rarely read",
+      "Objective statements are effective — modern employers prefer a brief professional summary focused on value delivered",
+      "Fancy design impresses recruiters — ATS systems fail on complex formatting; keep design clean and simple",
+      "Including every job you've ever had is better — only include relevant experience; jobs from 15+ years ago rarely add value"
+    ],
+    "edge_cases": [
+      "Career gaps: address briefly in cover letter or summary; frame gap activities (caregiving, freelancing, study) positively",
+      "Career pivot: lead with transferable skills and relevant projects, not job titles",
+      "Academic/research roles: CVs (not resumes) are expected — include publications, grants, conferences",
+      "Remote work: specify 'Remote' in the location field to signal flexibility to employers",
+      "Too many jobs (job hopping): group short-term contract work under a consulting umbrella entry"
+    ],
+    "real_world_examples": [
+      "Software engineer resume: leads with GitHub links and quantified impact ('Reduced API response time by 40%')",
+      "Marketing resume: quantifies campaign ROI, audience growth, and conversion rate improvements",
+      "New graduate: highlights academic projects, relevant coursework, and internship quantified results",
+      "Executive resume: two pages, emphasizes leadership impact, board visibility, and P&L responsibility"
+    ],
+    "analogies": [
+      "A resume is a marketing document, not a job history — you're the product; the resume is the ad. It doesn't need to be comprehensive; it needs to be compelling",
+      "Think of ATS as a robot reading your resume before any human does — write for the robot first (keywords), then for the human (clarity and achievements)"
+    ],
+    "metadata": {
+      "difficulty_level": "beginner",
+      "tags": ["resume", "career", "job search", "ATS", "hiring", "LinkedIn", "interview preparation"],
+      "prerequisites": ["None — accessible to anyone job searching"]
+    },
+    "input_type": "text",
+    "output_type": "structured",
+    "safety_notes": "",
+    "allowed_scope": "Can review, rewrite, advise on, and generate resume content for most professional roles. Does not fabricate qualifications or credentials.",
+    "summary": "A strong resume leads with quantified achievements (not job duties), uses ATS-compatible formatting, and is tailored to each role's keywords. The achievement formula — action verb + result + context — transforms weak duty-based bullets into compelling proof of impact.",
+    "related_topics": ["Cover letter writing", "LinkedIn profile optimization", "Interview preparation", "Salary negotiation", "Portfolio building", "Job search strategy"],
+    "response_style": "tutorial"
+  }
+]

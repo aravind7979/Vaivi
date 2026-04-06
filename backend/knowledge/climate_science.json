@@ -1,0 +1,71 @@
+[
+  {
+    "document_id": "general_016_climate_change",
+    "query_examples": [
+      "What is climate change and what causes it?",
+      "Explain the greenhouse effect simply",
+      "What evidence do we have that climate change is happening?",
+      "What's the difference between climate change and global warming?",
+      "What are the main sources of greenhouse gas emissions?"
+    ],
+    "title": "Climate Change: Causes, Evidence, and Mechanisms",
+    "domain": "climate_science",
+    "capability_type": "explanation",
+    "intent_type": "informational",
+    "context_variants": [
+      "Beginner: student writing a science report who wants an accurate, accessible overview",
+      "Expert: environmental scientist wanting a precise breakdown of radiative forcing contributors",
+      "Confused: user who has heard conflicting information and wants clarity",
+      "Time-constrained: someone who needs the key facts in 5 bullet points"
+    ],
+    "content": "Climate change refers to long-term shifts in global temperatures and weather patterns. While some climate change is natural, the overwhelming scientific consensus is that human activities — primarily burning fossil fuels — have been the dominant driver since the mid-20th century.\n\n**The greenhouse effect (natural and enhanced):**\nEarth's atmosphere contains greenhouse gases (GHGs) — primarily water vapor, CO₂, methane (CH₄), and nitrous oxide (N₂O). These gases trap heat radiated by Earth's surface (much like the glass of a greenhouse), keeping the planet ~33°C warmer than it would otherwise be. This natural effect is essential for life.\n\nHuman activities have increased GHG concentrations, enhancing this effect beyond natural levels:\n- CO₂: 280 ppm (pre-industrial) → 420+ ppm (2024) — highest in at least 800,000 years (ice cores)\n- Methane: ~2.7× higher than pre-industrial\n\n**Primary human emission sources (global):**\n1. Energy (electricity + heat): ~34%\n2. Transportation: ~16%\n3. Industry: ~24%\n4. Agriculture: ~19%\n5. Land use/deforestation: ~6%\n\n**Key observed evidence:**\n- Global average temperature: +1.2°C above pre-industrial baseline\n- Sea level rise: ~20 cm since 1900, accelerating\n- Arctic sea ice: declining ~13% per decade\n- Ocean acidification: pH dropped 0.1 units (30% more acidic)\n- Extreme weather: heat waves, heavy precipitation events, and wildfire seasons intensifying",
+    "code_examples": [],
+    "step_by_step_explanation": [
+      "Step 1: The sun emits shortwave radiation that passes through the atmosphere and warms Earth's surface",
+      "Step 2: Earth's warm surface emits longwave (infrared) radiation back toward space",
+      "Step 3: Greenhouse gases absorb and re-radiate this infrared radiation, trapping heat in the lower atmosphere",
+      "Step 4: Burning fossil fuels releases CO₂ stored over millions of years into the atmosphere in decades",
+      "Step 5: Higher CO₂ concentrations trap more heat, raising global average temperatures",
+      "Step 6: Feedbacks amplify the warming: warmer air holds more water vapor (a GHG), ice melts (reducing reflectivity), permafrost thaws (releasing methane)"
+    ],
+    "key_concepts": [
+      "Greenhouse effect", "Greenhouse gases (GHGs)", "CO₂ concentration", "Radiative forcing",
+      "Positive feedback loops", "Ocean acidification", "Sea level rise", "Global average temperature",
+      "Climate sensitivity", "Carbon budget", "Net zero", "IPCC", "Albedo", "Permafrost thaw"
+    ],
+    "common_misconceptions": [
+      "'Climate has always changed naturally' — true, but the current rate of change is 10–50× faster than natural interglacial transitions",
+      "'CO₂ is a trace gas so it can't have much effect' — even trace concentrations of GHGs have large radiative effects; the atmosphere's GHG composition has always been key to Earth's temperature",
+      "'Scientists disagree about climate change' — multiple independent surveys show 97%+ of climate scientists agree on human-caused warming; the disagreements are about specific projections and timescales",
+      "'Global warming means everywhere gets hotter' — regional effects vary; some areas get more precipitation, others face drought; 'climate change' is the broader term"
+    ],
+    "edge_cases": [
+      "Short-term variability: individual cold years or La Niña events don't contradict long-term warming trends — the trend must be observed over decades",
+      "Urban heat island effect: cities are warmer than surrounding areas; climate records account for this in their analyses",
+      "Aerosol cooling: industrial pollution (sulfate aerosols) has partially masked warming; reducing air pollution could temporarily accelerate warming",
+      "Tipping points: non-linear thresholds (e.g., collapse of Greenland ice sheet, Amazon dieback) where feedback loops become self-sustaining"
+    ],
+    "real_world_examples": [
+      "The 2021 Pacific Northwest heat dome: temperatures in Seattle reached 42°C — a 5σ deviation from historical norms, made 150× more likely by climate change (attribution science)",
+      "Bleaching of the Great Barrier Reef: ocean warming has caused mass coral bleaching events in 2016, 2017, 2020, 2022, and 2024",
+      "Greenland ice sheet: contributed ~1.5 cm to sea level rise since 2002, accelerating each decade",
+      "Agricultural disruption: crop yield models show significant regional productivity changes under +2°C and +4°C scenarios"
+    ],
+    "analogies": [
+      "The greenhouse effect is like a blanket around the planet — the thicker the blanket (more GHGs), the warmer it gets. We've been adding layers to the blanket for 200 years",
+      "Ocean acidification is like adding CO₂ to a fizzy drink — CO₂ dissolves in water to form carbonic acid; more atmospheric CO₂ means more acid in the oceans, making it harder for shell-forming organisms to build their structures"
+    ],
+    "metadata": {
+      "difficulty_level": "beginner",
+      "tags": ["climate change", "global warming", "greenhouse gases", "CO2", "IPCC", "fossil fuels", "sea level rise", "science"],
+      "prerequisites": ["Basic science literacy"]
+    },
+    "input_type": "text",
+    "output_type": "text",
+    "safety_notes": "",
+    "allowed_scope": "Explains the science of climate change using peer-reviewed data and IPCC findings. Distinguishes scientific consensus from policy debates (the latter are outside scope). Does not advocate for specific policy positions.",
+    "summary": "Climate change is driven primarily by human-caused increases in greenhouse gas concentrations, especially CO₂ from fossil fuels, which enhance the natural greenhouse effect. Observed evidence — rising temperatures, sea level, ice loss, and ocean acidification — is consistent across multiple independent measurement systems.",
+    "related_topics": ["Paris Agreement and climate targets", "Renewable energy", "Carbon capture", "Climate attribution science", "IPCC reports", "Adaptation vs mitigation"],
+    "response_style": "explanation"
+  }
+]

@@ -1,0 +1,74 @@
+[
+  {
+    "document_id": "backend_017_rest_api_design",
+    "query_examples": [
+      "How do I design a good REST API?",
+      "What are REST API best practices?",
+      "Difference between REST and GraphQL",
+      "How should I version my API?",
+      "What HTTP methods should I use for different operations?"
+    ],
+    "title": "RESTful API Design Best Practices",
+    "domain": "backend_engineering",
+    "capability_type": "explanation",
+    "intent_type": "informational",
+    "context_variants": [
+      "Beginner: junior developer building their first API and unsure how to structure endpoints",
+      "Expert: staff engineer reviewing API design for consistency and scalability",
+      "Confused: user mixing up PUT vs PATCH or unsure when to use query params vs path params",
+      "Time-constrained: developer who needs to ship a well-designed API today"
+    ],
+    "content": "REST (Representational State Transfer) is an architectural style for designing APIs that are intuitive, scalable, and easy to evolve. A well-designed REST API treats server resources as nouns and uses HTTP methods as verbs.\n\n**Core REST principles:**\n1. **Stateless:** Each request contains all information needed to process it — no session state on the server.\n2. **Uniform interface:** Consistent, predictable naming and HTTP method usage.\n3. **Resource-based:** APIs expose resources (nouns), not actions (verbs).\n\n**HTTP method semantics:**\n- GET /users — list all users (safe, idempotent)\n- GET /users/42 — get user 42\n- POST /users — create a new user\n- PUT /users/42 — replace user 42 entirely\n- PATCH /users/42 — partially update user 42\n- DELETE /users/42 — delete user 42\n\n**URL design rules:**\n- Use nouns, not verbs: /orders not /getOrders\n- Use lowercase and hyphens: /product-categories not /ProductCategories\n- Nest for ownership: /users/42/orders not /getOrdersByUser?id=42\n- Keep nesting shallow (≤2 levels deep)\n\n**Status codes that matter:**\n- 200 OK, 201 Created, 204 No Content\n- 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 409 Conflict\n- 422 Unprocessable Entity (validation errors), 429 Too Many Requests\n- 500 Internal Server Error\n\n**API versioning strategies:**\n- URL path: /v1/users (most common, explicit)\n- Header: Accept: application/vnd.myapi.v2+json\n- Query param: /users?version=1 (least preferred)",
+    "code_examples": [
+      "# FastAPI example — RESTful user resource\nfrom fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\nfrom typing import Optional\n\napp = FastAPI()\n\nclass User(BaseModel):\n    name: str\n    email: str\n\nclass UserUpdate(BaseModel):\n    name: Optional[str] = None\n    email: Optional[str] = None\n\nusers_db = {}\n\n@app.get('/v1/users/{user_id}')\ndef get_user(user_id: int):\n    if user_id not in users_db:\n        raise HTTPException(status_code=404, detail='User not found')\n    return users_db[user_id]\n\n@app.post('/v1/users', status_code=201)\ndef create_user(user: User):\n    user_id = len(users_db) + 1\n    users_db[user_id] = user.dict()\n    return {'id': user_id, **user.dict()}\n\n@app.patch('/v1/users/{user_id}')\ndef update_user(user_id: int, update: UserUpdate):\n    if user_id not in users_db:\n        raise HTTPException(status_code=404, detail='User not found')\n    users_db[user_id].update({k: v for k, v in update.dict().items() if v is not None})\n    return users_db[user_id]"
+    ],
+    "step_by_step_explanation": [
+      "Step 1: Identify your resources — what are the core nouns in your domain? (users, orders, products, etc.)",
+      "Step 2: Design the URL structure — use plural nouns, nest child resources under parents (max 2 levels)",
+      "Step 3: Assign correct HTTP methods — GET for reads, POST for create, PUT for full replace, PATCH for partial update, DELETE for removal",
+      "Step 4: Choose meaningful status codes — don't return 200 for everything; use 201 Created, 404, 400, etc. correctly",
+      "Step 5: Design consistent request/response bodies — use JSON, include an 'error' field in error responses with a human-readable message",
+      "Step 6: Add versioning from the start — /v1/ in the URL is the simplest and most explicit",
+      "Step 7: Document with OpenAPI/Swagger — auto-generated docs from FastAPI, Django REST Framework, or Spring Boot"
+    ],
+    "key_concepts": [
+      "REST constraints", "HTTP methods (GET/POST/PUT/PATCH/DELETE)", "Idempotency", "Statelessness",
+      "Status codes", "URL design", "Versioning", "Pagination", "Rate limiting", "Content negotiation",
+      "HATEOAS", "OpenAPI/Swagger", "JSON:API", "Query parameters vs path parameters"
+    ],
+    "common_misconceptions": [
+      "POST and PUT are interchangeable — POST creates (non-idempotent: calling it twice creates two resources); PUT replaces idempotently (calling it twice produces the same result)",
+      "REST APIs must return JSON — REST is format-agnostic; JSON is the convention but XML or other formats are valid",
+      "Nesting resources deeply improves clarity — deep nesting (e.g., /users/1/orders/2/items/3) creates tight coupling and difficult URL management; flatten where possible",
+      "401 and 403 mean the same thing — 401 means 'not authenticated'; 403 means 'authenticated but not authorized'"
+    ],
+    "edge_cases": [
+      "Bulk operations: REST doesn't define a native bulk endpoint; common patterns include POST /batch or JSON:API operations arrays",
+      "Long-running operations: return 202 Accepted immediately with a job ID; client polls /jobs/{id} for status",
+      "File uploads: use multipart/form-data for binary files; store file references (URLs) in resource JSON rather than embedding binary data",
+      "Soft deletes: return 404 for soft-deleted resources to external clients, even if the record exists in the DB",
+      "Breaking changes in APIs: use semantic versioning and deprecation headers; never silently change field names or remove fields"
+    ],
+    "real_world_examples": [
+      "GitHub REST API: textbook example of consistent resource naming, pagination (Link headers), and proper status code usage",
+      "Stripe API: versioning via request headers, consistent error objects with type/code/message, idempotency keys for payment operations",
+      "Twitter/X API v2: cursor-based pagination, field expansion pattern, and careful backwards compatibility"
+    ],
+    "analogies": [
+      "REST API design is like designing a well-organized restaurant menu — resources are the dishes (nouns), HTTP methods are what you do with them (order, modify, cancel), and status codes are the waiter's response ('Here's your dish', 'Sorry, we're out', 'You haven't paid yet')",
+      "PUT is like replacing an entire form; PATCH is like crossing out and changing one field on that form"
+    ],
+    "metadata": {
+      "difficulty_level": "intermediate",
+      "tags": ["REST API", "API design", "HTTP", "backend", "web development", "FastAPI", "status codes", "versioning"],
+      "prerequisites": ["Basic HTTP knowledge", "What an API is", "JSON format"]
+    },
+    "input_type": "text",
+    "output_type": "structured",
+    "safety_notes": "",
+    "allowed_scope": "Covers REST design principles, HTTP method semantics, URL structure, status codes, versioning, and documentation. Can review and critique API designs. Does not cover implementation details for all frameworks in depth.",
+    "summary": "A well-designed REST API uses resource-based URLs (nouns not verbs), correct HTTP method semantics, meaningful status codes, and URL versioning from day one. Consistency and predictability across endpoints is more important than any individual design choice.",
+    "related_topics": ["GraphQL vs REST", "gRPC", "API authentication (OAuth, JWT)", "OpenAPI specification", "API rate limiting", "Webhook design", "Pagination patterns"],
+    "response_style": "tutorial"
+  }
+]

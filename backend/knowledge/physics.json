@@ -1,0 +1,74 @@
+[
+  {
+    "document_id": "physics_005_relativity",
+    "query_examples": [
+      "Explain special relativity in simple terms",
+      "Why does time slow down at high speeds?",
+      "What is time dilation and how does it work?",
+      "Can you explain E=mc2?",
+      "What does Einstein's theory of relativity say about space and time?"
+    ],
+    "title": "Einstein's Special Theory of Relativity",
+    "domain": "physics",
+    "capability_type": "explanation",
+    "intent_type": "informational",
+    "context_variants": [
+      "Beginner: curious non-scientist who's heard the term but wants an intuitive grasp",
+      "Expert: physics student wanting the Lorentz transformations and precise derivations",
+      "Confused: user who thinks relativity means 'everything is relative' philosophically",
+      "Time-constrained: someone who wants the three key takeaways in 2 minutes"
+    ],
+    "content": "Special relativity (1905) is Einstein's theory describing how space, time, and energy behave at very high speeds — close to the speed of light.\n\n**Two postulates everything is built on:**\n1. The laws of physics are the same for all observers moving at constant velocity.\n2. The speed of light in a vacuum (c ≈ 3×10⁸ m/s) is the same for ALL observers, regardless of the motion of the light source.\n\n**Three major consequences:**\n\n1. **Time dilation:** Moving clocks tick slower. If you travel at 87% of the speed of light, your clock runs at half the rate of a stationary observer's clock. Formula: Δt' = γΔt, where γ = 1/√(1 - v²/c²).\n\n2. **Length contraction:** Objects moving at high speed appear shorter in the direction of motion. Formula: L' = L/γ.\n\n3. **Mass-energy equivalence:** Mass and energy are interchangeable: E = mc². A tiny amount of mass contains enormous energy (the basis of nuclear reactions).\n\n**What's NOT relative:** The speed of light and the spacetime interval (the 'distance' between two events in 4D spacetime) are the same for all observers.",
+    "code_examples": [
+      "import math\n\nc = 3e8  # speed of light in m/s\n\ndef lorentz_factor(v):\n    \"\"\"Compute the Lorentz factor gamma for velocity v\"\"\"\n    if v >= c:\n        raise ValueError('Speed cannot equal or exceed c')\n    return 1 / math.sqrt(1 - (v/c)**2)\n\ndef time_dilation(proper_time, v):\n    \"\"\"Time elapsed for a moving observer vs stationary\"\"\"\n    gamma = lorentz_factor(v)\n    return gamma * proper_time\n\n# Example: astronaut travels at 0.9c for 10 years ship-time\nv = 0.9 * c\nship_time = 10  # years\nearth_time = time_dilation(ship_time, v)\nprint(f'Ship time: {ship_time:.1f} years')\nprint(f'Earth time: {earth_time:.1f} years')  # ≈ 22.9 years"
+    ],
+    "step_by_step_explanation": [
+      "Step 1: Accept the two postulates — laws of physics are universal, and c is constant for all observers",
+      "Step 2: Derive the Lorentz factor γ = 1/√(1-v²/c²) from a thought experiment with a light clock",
+      "Step 3: Apply γ to time: moving clocks run slow by factor γ (time dilation)",
+      "Step 4: Apply γ to length: moving objects shrink by factor γ in the direction of motion",
+      "Step 5: Derive E=mc² from relativistic momentum and energy conservation",
+      "Step 6: Understand that simultaneity is also relative — events that are simultaneous in one frame may not be in another"
+    ],
+    "key_concepts": [
+      "Speed of light (c)", "Lorentz factor (γ)", "Time dilation", "Length contraction", "Mass-energy equivalence",
+      "Reference frame", "Inertial frame", "Spacetime", "Simultaneity", "Proper time", "Spacetime interval",
+      "Four-vectors", "Minkowski space"
+    ],
+    "common_misconceptions": [
+      "'Relativity means everything is relative' — the speed of light and physical laws are absolute; it's the measurement of time and space that varies between frames",
+      "Time dilation is an illusion or instrument error — it is physically real; GPS satellites must correct for it or navigation drifts by kilometers per day",
+      "E=mc² means mass turns into energy — more precisely, mass IS a form of energy and the two are equivalent",
+      "Relativity only matters at extreme speeds — GPS, particle accelerators, and nuclear reactors all depend on relativistic corrections"
+    ],
+    "edge_cases": [
+      "At v = 0 (no motion): γ = 1, so all relativistic effects vanish — classical mechanics recovered",
+      "At v → c: γ → ∞, meaning infinite energy would be needed to accelerate a massive object to c",
+      "Massless particles (photons): always travel at c, have no rest mass, but carry energy E = hf",
+      "Twin paradox: one twin travels at relativistic speed and returns younger — resolved by acknowledging the traveling twin accelerates and changes frames",
+      "General relativity extends special relativity to include gravity and accelerating frames"
+    ],
+    "real_world_examples": [
+      "GPS satellite clocks: must be corrected for both time dilation (SR effect, -7 μs/day) and gravitational time dilation (GR effect, +45 μs/day) — without this, GPS would drift ~10 km/day",
+      "Particle accelerators: protons at CERN reach 99.9999991% of c; their mass increases ~7000-fold as predicted",
+      "Nuclear energy: uranium fission converts tiny mass into enormous energy (E=mc²)",
+      "Muon survival: cosmic ray muons should decay before reaching Earth's surface, but time dilation extends their lifetime enough that we detect them"
+    ],
+    "analogies": [
+      "Time dilation is like two people walking — one walks straight, the other zigzags. They cover the same distance (spacetime interval) but the zigzagger uses more of it for space and less for time, so their clock appears slower",
+      "E=mc² is like a currency exchange — mass and energy are the same currency at different denominations. c² is an enormous exchange rate, so a little mass = enormous energy"
+    ],
+    "metadata": {
+      "difficulty_level": "intermediate",
+      "tags": ["special relativity", "Einstein", "time dilation", "E=mc2", "Lorentz factor", "physics", "spacetime"],
+      "prerequisites": ["Basic algebra", "Conceptual understanding of velocity and speed"]
+    },
+    "input_type": "text",
+    "output_type": "text",
+    "safety_notes": "",
+    "allowed_scope": "Explains conceptual and mathematical aspects of special relativity including time dilation, length contraction, and E=mc². Does not cover general relativity (gravity) in depth.",
+    "summary": "Special relativity, built on the constancy of the speed of light, predicts that time slows, lengths contract, and mass and energy are equivalent (E=mc²) at very high velocities. These effects are measurably real and underpin technologies like GPS.",
+    "related_topics": ["General relativity", "Lorentz transformation", "GPS and relativity", "Spacetime diagrams", "Quantum mechanics", "Nuclear energy"],
+    "response_style": "explanation"
+  }
+]

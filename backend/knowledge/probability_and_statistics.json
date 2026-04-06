@@ -1,0 +1,74 @@
+[
+  {
+    "document_id": "math_004_bayes_theorem",
+    "query_examples": [
+      "What is Bayes' theorem and how does it work?",
+      "Explain Bayes theorem with a real example",
+      "How to use Bayes rule to update probabilities",
+      "Bayes theorem in medical testing — false positives",
+      "What does P(A|B) mean in probability?"
+    ],
+    "title": "Bayes' Theorem and Conditional Probability",
+    "domain": "probability_and_statistics",
+    "capability_type": "explanation",
+    "intent_type": "learning",
+    "context_variants": [
+      "Beginner: someone who's heard of Bayes but never formally studied probability",
+      "Expert: data scientist applying Bayesian inference to model posteriors",
+      "Confused: user who mixes up P(A|B) and P(B|A)",
+      "Time-constrained: student needing to understand it for an exam tomorrow"
+    ],
+    "content": "Bayes' theorem describes how to update the probability of a hypothesis when new evidence arrives. It is the mathematical foundation of Bayesian reasoning.\n\n**The formula:**\n  P(H|E) = [P(E|H) × P(H)] / P(E)\n\nWhere:\n- P(H|E) = Posterior — probability of hypothesis H being true given evidence E\n- P(H) = Prior — initial probability of H before seeing evidence\n- P(E|H) = Likelihood — probability of observing E if H were true\n- P(E) = Marginal likelihood — total probability of seeing E under all hypotheses\n\n**Classic example — Medical testing:**\nA disease affects 1% of the population. A test is 99% accurate (sensitivity = 99%, specificity = 99%). You test positive. What's the probability you actually have the disease?\n\nMost people say ~99%. The true answer is about 50%.\n\nUsing Bayes:\n- P(Disease) = 0.01 (prior)\n- P(Positive | Disease) = 0.99 (sensitivity)\n- P(Positive | No Disease) = 0.01 (false positive rate)\n- P(Positive) = 0.99×0.01 + 0.01×0.99 = 0.0198\n- P(Disease | Positive) = (0.99 × 0.01) / 0.0198 ≈ 0.50\n\nThe low prior (1% prevalence) pulls the posterior down — even a great test produces many false positives when the disease is rare.",
+    "code_examples": [
+      "def bayes_update(prior, likelihood, false_positive_rate):\n    \"\"\"\n    prior: P(H)\n    likelihood: P(E|H) — true positive rate\n    false_positive_rate: P(E|not H)\n    Returns P(H|E)\n    \"\"\"\n    p_e = likelihood * prior + false_positive_rate * (1 - prior)\n    posterior = (likelihood * prior) / p_e\n    return posterior\n\n# Medical test example\nprior = 0.01        # 1% disease prevalence\nlikelihood = 0.99   # 99% sensitivity\nfpr = 0.01          # 1% false positive rate\n\nresult = bayes_update(prior, likelihood, fpr)\nprint(f'P(Disease | Positive test) = {result:.2%}')  # ≈ 50.0%"
+    ],
+    "step_by_step_explanation": [
+      "Step 1: Identify the prior P(H) — what do you believe before seeing the evidence?",
+      "Step 2: Identify the likelihood P(E|H) — how probable is the evidence if H is true?",
+      "Step 3: Identify P(E|¬H) — how probable is the evidence if H is false (false positive rate)?",
+      "Step 4: Compute the total probability of the evidence: P(E) = P(E|H)×P(H) + P(E|¬H)×P(¬H)",
+      "Step 5: Apply Bayes' formula: P(H|E) = P(E|H) × P(H) / P(E)",
+      "Step 6: Interpret the posterior — it is your updated belief after seeing the evidence"
+    ],
+    "key_concepts": [
+      "Prior probability", "Posterior probability", "Likelihood", "Marginal likelihood", "Conditional probability",
+      "Base rate neglect", "Sensitivity (true positive rate)", "Specificity (true negative rate)",
+      "False positive", "Bayesian inference", "Bayesian updating", "Conjugate prior"
+    ],
+    "common_misconceptions": [
+      "P(A|B) = P(B|A): this is the prosecutor's fallacy — P(disease|positive) ≠ P(positive|disease)",
+      "High test accuracy guarantees high posterior probability — the prior (base rate) matters enormously",
+      "Bayes' theorem is only for medical problems — it applies anywhere you update beliefs with evidence (spam filters, NLP, finance)",
+      "Bayesian reasoning is subjective — while the prior is chosen by the analyst, Bayesian methods provide rigorous uncertainty quantification"
+    ],
+    "edge_cases": [
+      "Prior = 0 (impossible hypothesis): posterior is always 0 regardless of evidence",
+      "Prior = 1 (certain hypothesis): posterior is always 1 regardless of evidence (Cromwell's rule warns against 0/1 priors)",
+      "Very rare events with imperfect tests: even very accurate tests give mostly false positives when the base rate is tiny",
+      "Multiple pieces of evidence: each round of evidence updates the posterior, which becomes the new prior"
+    ],
+    "real_world_examples": [
+      "Spam filters: P(spam | contains word 'lottery') updated across thousands of words",
+      "COVID screening: understanding why mass testing produces many false positives at low prevalence",
+      "Naive Bayes classifier for text categorization",
+      "Medical diagnosis decision support systems",
+      "A/B testing: updating belief about which variant is better as data accumulates"
+    ],
+    "analogies": [
+      "Bayes' theorem is like a detective updating their suspect list: start with everyone as a suspect (prior), gather clues (evidence), and revise your list (posterior) — the most likely suspect changes as evidence accumulates",
+      "Think of the prior as your starting bet and each piece of evidence as a clue that adjusts your bet up or down"
+    ],
+    "metadata": {
+      "difficulty_level": "intermediate",
+      "tags": ["Bayes theorem", "probability", "statistics", "conditional probability", "Bayesian inference", "medical testing", "machine learning"],
+      "prerequisites": ["Basic probability (what P(A) means)", "Fractions and percentages"]
+    },
+    "input_type": "text",
+    "output_type": "step_by_step",
+    "safety_notes": "Medical examples are illustrative only. Do not use this for actual clinical diagnosis. Always consult a medical professional for health decisions.",
+    "allowed_scope": "Explains the theorem, works through examples, and applies it to spam filtering, medical testing, and ML. Does not replace clinical decision-making or actuarial calculations.",
+    "summary": "Bayes' theorem computes a posterior probability by combining a prior belief with new evidence via the likelihood. A key insight is that low base rates can make even highly accurate tests produce surprising false positive rates.",
+    "related_topics": ["Naive Bayes classifier", "Bayesian networks", "A/B testing", "Maximum likelihood estimation", "Hypothesis testing", "Prior and posterior distributions"],
+    "response_style": "explanation"
+  }
+]

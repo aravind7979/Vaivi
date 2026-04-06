@@ -1,0 +1,73 @@
+[
+  {
+    "document_id": "productivity_011_pomodoro",
+    "query_examples": [
+      "What is the Pomodoro technique and does it work?",
+      "How do I use the Pomodoro method to focus better?",
+      "Best time management techniques for deep work",
+      "Why can't I focus for more than 20 minutes?",
+      "How to stop procrastinating and start working"
+    ],
+    "title": "The Pomodoro Technique and Deep Work",
+    "domain": "productivity",
+    "capability_type": "explanation",
+    "intent_type": "learning",
+    "context_variants": [
+      "Beginner: student struggling to study without getting distracted",
+      "Expert: knowledge worker optimizing output during a demanding project",
+      "Confused: user who tried Pomodoro but found 25 minutes too short or too long",
+      "Time-constrained: someone wanting to just start right now"
+    ],
+    "content": "The Pomodoro Technique is a time management method created by Francesco Cirillo in the late 1980s. It structures work into focused intervals separated by short breaks, leveraging attention research to combat procrastination and mental fatigue.\n\n**The classic protocol:**\n1. Choose a single task\n2. Set a timer for 25 minutes — work on that task only, with zero interruptions\n3. When the timer rings, take a 5-minute break\n4. After 4 Pomodoros, take a longer 15–30 minute break\n\n**Why it works:**\n- **Timeboxing:** A defined end creates urgency without anxiety (Parkinson's Law: work expands to fill available time)\n- **Single-tasking:** Eliminates context switching, which research shows can cost 20–40% of productive time\n- **Break structure:** Prevents the gradual degradation of focus that comes from extended unbroken work\n- **Progress visibility:** Counting Pomodoros gives a concrete measure of work done\n\n**Adapting the technique:**\n- In 'flow states,' extend intervals to 45–90 minutes (Newport's 'deep work' model)\n- Use shorter 15-minute Pomodoros for tasks you're avoiding\n- Plan your day in Pomodoros: how many units can you realistically do today?",
+    "code_examples": [
+      "import time\n\ndef pomodoro_timer(work_minutes=25, break_minutes=5, sessions=4):\n    for i in range(sessions):\n        print(f'\\nPomodoro {i+1}/{sessions} — Focus time: {work_minutes} minutes')\n        print('Work starts now. No distractions!')\n        time.sleep(work_minutes * 60)\n        if i < sessions - 1:\n            print(f'Break time: {break_minutes} minutes')\n            time.sleep(break_minutes * 60)\n        else:\n            print('Long break! Take 15–30 minutes.')\n\n# pomodoro_timer()  # Uncomment to run"
+    ],
+    "step_by_step_explanation": [
+      "Step 1: Write down the task you want to work on — be specific ('Write introduction of chapter 3', not 'Write thesis')",
+      "Step 2: Eliminate distractions — silence phone, close social media, use a site blocker if needed",
+      "Step 3: Set a 25-minute timer",
+      "Step 4: Work with complete focus — if an interruption arises, note it on paper and return to work",
+      "Step 5: When the timer rings, mark an X or check on your tracking sheet (one Pomodoro completed)",
+      "Step 6: Take a 5-minute break — stand up, stretch, hydrate — don't check email",
+      "Step 7: After 4 Pomodoros, take a 15–30 minute break"
+    ],
+    "key_concepts": [
+      "Timeboxing", "Single-tasking", "Flow state", "Attention management", "Parkinson's Law",
+      "Context switching cost", "Ultradian rhythm", "Deep work", "Shallow work", "Task batching",
+      "Time blocking", "Cognitive load", "Procrastination"
+    ],
+    "common_misconceptions": [
+      "25 minutes is the optimal interval for everyone — it's a starting point; many people do better with 45–90 minute deep work blocks",
+      "Pomodoro is only for studying — it works for coding, writing, design, and any cognitively demanding task",
+      "You should never work longer than 25 minutes without a break — if you're in a flow state, it's better to continue than interrupt it",
+      "Checking email quickly doesn't count as an interruption — task-switching has a mental 'reorientation cost' even for brief interruptions"
+    ],
+    "edge_cases": [
+      "Creative work or research: insights often come during breaks — keep a notepad nearby during breaks",
+      "Team environments: frequent interruptions from colleagues require negotiating 'focus hours' or using headphones as a signal",
+      "ADHD: Pomodoro can help with initiation difficulty; consider shorter initial intervals (10–15 min) and work up",
+      "Tasks shorter than 25 min: batch similar small tasks into one Pomodoro rather than tracking sub-25-minute tasks individually"
+    ],
+    "real_world_examples": [
+      "Writers using Pomodoro to meet daily word count targets without burning out",
+      "Software engineers using deep work blocks (90 min) for complex problem-solving and Pomodoro (25 min) for code review",
+      "Students using Pomodoro during exam prep — 4 Pomodoros = ~2 hours of effective study"
+    ],
+    "analogies": [
+      "The Pomodoro technique is like interval training for your brain — you sprint for 25 minutes, rest for 5, and repeat. Just as you can't sprint a marathon, you can't sustain peak focus for 8 hours without structured recovery",
+      "Each Pomodoro is a commitment: 'For the next 25 minutes, I belong entirely to this task.' The timer is your contract."
+    ],
+    "metadata": {
+      "difficulty_level": "beginner",
+      "tags": ["Pomodoro", "productivity", "focus", "time management", "deep work", "procrastination", "study habits"],
+      "prerequisites": ["None — accessible to anyone"]
+    },
+    "input_type": "text",
+    "output_type": "step_by_step",
+    "safety_notes": "",
+    "allowed_scope": "Explains the technique, its science, adaptation guidelines, and tooling. Does not replace professional treatment for attention disorders like ADHD.",
+    "summary": "The Pomodoro Technique uses 25-minute focused work intervals separated by 5-minute breaks to combat procrastination and attention fatigue. It works by creating urgency through timeboxing and reducing the cognitive cost of context switching.",
+    "related_topics": ["Deep work (Cal Newport)", "Time blocking", "GTD (Getting Things Done)", "Attention management", "Flow state", "Ultradian rhythms"],
+    "response_style": "tutorial"
+  }
+]

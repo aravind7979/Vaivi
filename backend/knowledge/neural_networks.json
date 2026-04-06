@@ -1,0 +1,74 @@
+[
+  {
+    "document_id": "ml_002_gradient_descent",
+    "query_examples": [
+      "What is gradient descent in machine learning?",
+      "Explain gradient descent with a simple example",
+      "How does gradient descent minimize loss?",
+      "Difference between SGD, mini-batch, and batch gradient descent",
+      "Why does my gradient descent not converge?"
+    ],
+    "title": "Gradient Descent Optimization",
+    "domain": "neural_networks",
+    "capability_type": "explanation",
+    "intent_type": "learning",
+    "context_variants": [
+      "Beginner: student who just learned about functions and derivatives",
+      "Expert: ML practitioner tuning learning rates and optimizer choice",
+      "Confused: user who doesn't understand why we use the gradient",
+      "Time-constrained: engineer in a review meeting needing a concise summary"
+    ],
+    "content": "Gradient descent is the core optimization algorithm used to train most machine learning models. Its goal is to find the set of model parameters (weights) that minimizes a loss function — a measure of how wrong the model's predictions are.\n\n**The intuition:** Imagine standing on a hilly landscape blindfolded. You want to reach the lowest valley. Your strategy: feel the slope under your feet, take a small step in the downhill direction, and repeat. Gradient descent does exactly this mathematically.\n\n**The math:** The gradient (∇L) of the loss function tells you which direction increases the loss most steeply. To minimize, we move in the *opposite* direction:\n  w = w - α * ∇L(w)\n  where α (alpha) is the learning rate — how big each step is.\n\n**Three variants:**\n- **Batch gradient descent:** uses the entire dataset to compute each gradient update. Accurate but slow and memory-intensive.\n- **Stochastic gradient descent (SGD):** uses one random sample per update. Fast and memory-efficient but noisy.\n- **Mini-batch gradient descent:** uses a small batch (e.g., 32–256 samples). Best of both — the standard in deep learning.",
+    "code_examples": [
+      "import numpy as np\n\n# Simple gradient descent for linear regression\ndef gradient_descent(X, y, lr=0.01, epochs=1000):\n    m, n = X.shape\n    weights = np.zeros(n)\n    bias = 0\n    losses = []\n    for _ in range(epochs):\n        y_pred = X @ weights + bias\n        error = y_pred - y\n        # Compute gradients\n        dw = (2 / m) * X.T @ error\n        db = (2 / m) * np.sum(error)\n        # Update parameters\n        weights -= lr * dw\n        bias -= lr * db\n        losses.append(np.mean(error**2))\n    return weights, bias, losses"
+    ],
+    "step_by_step_explanation": [
+      "Step 1: Initialize model weights randomly or to zero",
+      "Step 2: Make predictions using the current weights (forward pass)",
+      "Step 3: Compute the loss — how far off the predictions are",
+      "Step 4: Compute the gradient of the loss with respect to each weight (backpropagation in neural nets)",
+      "Step 5: Update each weight by subtracting learning_rate × gradient",
+      "Step 6: Repeat steps 2–5 for many iterations (epochs) until the loss converges"
+    ],
+    "key_concepts": [
+      "Loss function", "Gradient", "Learning rate", "Epoch", "Convergence", "Local minima",
+      "Global minima", "Saddle points", "Backpropagation", "SGD", "Mini-batch", "Momentum", "Adam optimizer"
+    ],
+    "common_misconceptions": [
+      "Gradient descent always finds the global minimum — it can get stuck in local minima or saddle points, especially with non-convex loss surfaces",
+      "A smaller learning rate is always better — too small means very slow convergence; too large means divergence (exploding loss)",
+      "Gradient descent is only for neural networks — it's used in linear/logistic regression, SVMs, and almost any parametric model",
+      "One epoch is enough — complex models need many epochs; convergence depends on data size and model complexity"
+    ],
+    "edge_cases": [
+      "Learning rate too high: loss oscillates or diverges instead of converging",
+      "Vanishing gradients: in deep networks, gradients can become near-zero, halting learning in early layers",
+      "Exploding gradients: gradients grow exponentially, causing NaN weights — mitigated by gradient clipping",
+      "Non-convex surfaces: convergence point depends on initialization",
+      "Feature scale mismatch: unscaled features cause elongated loss landscapes and slow convergence — normalize inputs"
+    ],
+    "real_world_examples": [
+      "Training a neural network to recognize handwritten digits (MNIST)",
+      "Fitting a linear regression model to house price data",
+      "Fine-tuning a language model with AdamW optimizer",
+      "Training a recommendation system on user-item interactions"
+    ],
+    "analogies": [
+      "Gradient descent is like a blindfolded hiker trying to reach the lowest valley — at each step, they feel the slope and walk downhill",
+      "The learning rate is like step size: too large and you overshoot the valley; too small and it takes forever to get there",
+      "The loss landscape is the terrain: flat plateaus are saddle points, valleys are local minima, the deepest valley is the global minimum"
+    ],
+    "metadata": {
+      "difficulty_level": "intermediate",
+      "tags": ["gradient descent", "optimization", "loss function", "learning rate", "SGD", "machine learning", "backpropagation"],
+      "prerequisites": ["Basic calculus (derivatives)", "Linear algebra (vectors)", "What a loss/cost function is"]
+    },
+    "input_type": "text",
+    "output_type": "step_by_step",
+    "safety_notes": "",
+    "allowed_scope": "Covers conceptual explanation, math, code, convergence diagnosis, and variant comparison. Does not provide domain-specific tuning advice without knowing the model architecture and dataset.",
+    "summary": "Gradient descent iteratively adjusts model weights in the direction that reduces the loss function most steeply, guided by the gradient and a learning rate. Mini-batch SGD is the most widely used variant in deep learning.",
+    "related_topics": ["Backpropagation", "Adam optimizer", "Learning rate schedules", "Loss functions", "Convex optimization", "Neural network training"],
+    "response_style": "explanation"
+  }
+]

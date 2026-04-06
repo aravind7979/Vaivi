@@ -13,6 +13,9 @@ from datetime import timedelta
 from database import engine, get_db
 import models
 import auth
+from core.orchestrator import route_and_answer
+from core.memory import get_recent_memory, save_message
+import time
 
 # Create DB tables
 models.Base.metadata.create_all(bind=engine)
@@ -145,7 +148,7 @@ async def ask_assistant(request: AskRequest, db: Session = Depends(get_db), curr
     if not GEMINI_API_KEY:
         raise HTTPException(status_code=500, detail="Gemini API Key missing")
 
-    prompt = "You are Vaivi, a helpful AI assistant."
+    prompt = "You are Vaivi, a helpful AI assistant.\nIMPORTANT: Math formulas MUST strictly be output as human-readable plain text, not LaTeX (e.g., '(-b ± √(b² - 4ac)) / (2a)')."
 
     if request.context:
         prompt += f" Context: {request.context}"
@@ -219,7 +222,8 @@ async def chat_with_media(
             pil_images.append(Image.open(io.BytesIO(image_bytes)))
 
         system_prompt = (
-            "You are Vaivi, an AI assistant capable of analyzing images and screens."
+            "You are Vaivi, an AI assistant capable of analyzing images and screens.\n"
+            "IMPORTANT: Math formulas MUST strictly be output as human-readable plain text, not LaTeX (e.g., '(-b ± √(b² - 4ac)) / (2a)')."
         )
 
         if query:
@@ -237,3 +241,48 @@ async def chat_with_media(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/query")
+async def unified_copilot_query(
+    files: list[UploadFile] | None = None,
+    query: str = Form(""),
+    chat_id: int = Form(None),
+    mode: str = Form("assist"),
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    """
+    Unified Copilot Route:
+    Perception -> Planning -> Context Fusion -> Orchestrator -> Result
+    """
+    start_time = time.time()
+    
+    pil_images = []
+    if files:
+        for file in files:
+            image_bytes = await file.read()
+            pil_images.append(Image.open(io.BytesIO(image_bytes)))
+            
+    # Load memory 
+    chat_history = get_recent_memory(db, chat_id, current_user.id, limit=10)
+    
+    # Save user query
+    if chat_id:
+        db_msg = f"[Screen] {query}" if pil_images else query
+        save_message(db, chat_id, current_user.id, "user", db_msg)
+
+    # Route and Answer
+    result = route_and_answer(query, pil_images, chat_history)
+    ai_response = result["response"]
+    
+    # Save Assistant Response
+    if chat_id:
+        save_message(db, chat_id, current_user.id, "ai", ai_response)
+
+    elapsed_ms = int((time.time() - start_time) * 1000)
+    result["debug_info"]["latency_ms"] = elapsed_ms
+    
+    return {
+        "response": ai_response,
+        "debug_info": result["debug_info"]
+    }

@@ -1,0 +1,71 @@
+[
+  {
+    "document_id": "creative_012_storytelling",
+    "query_examples": [
+      "How do I write a compelling story opening?",
+      "What makes a character feel real and believable?",
+      "Explain the three-act structure for fiction writing",
+      "How do I show instead of tell in creative writing?",
+      "I want to start writing fiction — where do I begin?"
+    ],
+    "title": "Core Principles of Compelling Fiction Writing",
+    "domain": "creative_writing",
+    "capability_type": "creative_generation",
+    "intent_type": "learning",
+    "context_variants": [
+      "Beginner: someone who has an idea for a story but has never written fiction before",
+      "Expert: experienced writer wanting to diagnose weaknesses in their prose",
+      "Confused: user who can't understand why their story 'feels flat'",
+      "Time-constrained: writer who needs to produce a first chapter by tonight"
+    ],
+    "content": "Great fiction is built on a small set of craft principles that determine whether a reader stays or quits. Mastering them takes time, but understanding them immediately improves your writing.\n\n**1. Show, don't tell:**\nTelling: 'She was nervous.'\nShowing: 'Her pen tapped the desk in a rapid, irregular rhythm. She hadn't realized she was doing it until he looked at her hand.'\nShowing uses specific, sensory detail to let the reader *feel* the emotion rather than being told it.\n\n**2. Character is desire + obstacle:**\nA compelling character wants something (even something small) and faces obstacles to getting it. Flat characters want nothing or get everything easily.\n\n**3. Three-act structure:**\n- Act 1 (25%): Establish the world, protagonist, and their normal life. Introduce the inciting incident that forces a change.\n- Act 2 (50%): Rising complications. Protagonist tries and fails. Stakes escalate. Midpoint shifts direction. Dark moment near the end.\n- Act 3 (25%): Climax where protagonist must apply what they've learned. Resolution.\n\n**4. Specific beats generic:**\n'A bird sang in the tree' → 'A mockingbird cycled through its stolen repertoire outside the window.'\nSpecificity creates vividness and trust — the reader believes you know your world.\n\n**5. Dialogue reveals character:**\nStrong dialogue advances plot, reveals character, and creates subtext (what's not said). Characters should not speak like narrators or exposition dumps.",
+    "code_examples": [],
+    "step_by_step_explanation": [
+      "Step 1: Start with character — know what your protagonist wants and what stands in their way",
+      "Step 2: Open in motion — begin with a scene that shows the character in their world or facing the first disruption (not backstory)",
+      "Step 3: Establish stakes early — readers need to know what the character stands to lose",
+      "Step 4: Write with sensory specificity — choose concrete details over abstract descriptions",
+      "Step 5: Use scene structure within each chapter: goal → conflict → setback (or disaster)",
+      "Step 6: Revise for 'show/tell' — find every 'was feeling', 'seemed', 'felt like' and replace with physical action or dialogue",
+      "Step 7: Read your dialogue aloud — if you can't tell who's speaking from the words alone, the voices aren't differentiated enough"
+    ],
+    "key_concepts": [
+      "Show vs tell", "Three-act structure", "Character arc", "Inciting incident", "Stakes",
+      "Subtext", "Point of view (POV)", "Narrative distance", "Rising action", "Climax",
+      "Dialogue tags", "Scene vs summary", "Specificity", "Protagonist desire"
+    ],
+    "common_misconceptions": [
+      "'Show don't tell' means never tell — skilled writers balance showing and telling; telling is efficient for less critical information",
+      "The plot must be complex to be compelling — simple premises with compelling characters often outperform complex plots with thin characters",
+      "First-person is easier to write than third — POV choice has trade-offs; first-person limits the reader to only what the narrator knows",
+      "Good writing is about finding the right words — it's primarily about structure, character, and scene design; word-level craft comes after"
+    ],
+    "edge_cases": [
+      "Nonlinear narrative: works best when each timeline is independently compelling and the juxtaposition creates meaning",
+      "Multiple POV: requires each character's voice to be meaningfully distinct; readers need to care about each POV character",
+      "Unreliable narrator: deliberately providing false or distorted information — requires extremely controlled execution",
+      "Flash fiction (under 1,000 words): every word must carry weight; three-act structure is compressed into one pivotal scene"
+    ],
+    "real_world_examples": [
+      "George Orwell's '1984' opens immediately in scene: 'It was a bright cold day in April, and the clocks were striking thirteen' — specific, arresting, world-building",
+      "Cormac McCarthy's 'The Road' uses extreme sensory specificity and absence of dialogue tags to create tension",
+      "Pixar's storytelling framework: 'Once upon a time... Every day... Until one day... Because of that... Until finally... Ever since then' — three-act structure in miniature"
+    ],
+    "analogies": [
+      "Writing fiction is like building a house — three-act structure is the foundation, characters are the rooms, and prose style is the interior design. A beautiful interior in a house with no foundation collapses",
+      "'Show don't tell' is like the difference between a doctor telling you 'the patient is in pain' vs showing you the patient gripping the bedsheet and biting their lip — one informs, the other makes you feel it"
+    ],
+    "metadata": {
+      "difficulty_level": "beginner",
+      "tags": ["creative writing", "fiction", "storytelling", "three-act structure", "show don't tell", "character development", "narrative craft"],
+      "prerequisites": ["Basic literacy — no prior writing experience required"]
+    },
+    "input_type": "text",
+    "output_type": "text",
+    "safety_notes": "",
+    "allowed_scope": "Can explain craft principles, critique writing samples, generate example prose, and help structure stories. Does not write long-form fiction on the user's behalf for publication without their creative input.",
+    "summary": "Compelling fiction rests on character desire + obstacle, sensory specificity, the show-don't-tell principle, and sound three-act structure. These craft fundamentals apply equally to short stories, novels, and screenplays.",
+    "related_topics": ["Character development", "Dialogue writing", "World-building", "Editing and revision", "Genre conventions", "Screenplay structure"],
+    "response_style": "tutorial"
+  }
+]

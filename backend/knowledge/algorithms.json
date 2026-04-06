@@ -1,0 +1,75 @@
+[
+  {
+    "document_id": "algo_001_binary_search",
+    "query_examples": [
+      "How does binary search work?",
+      "Explain binary search algorithm with example",
+      "When should I use binary search instead of linear search?",
+      "Binary search time complexity and implementation",
+      "Why is binary search O(log n)?"
+    ],
+    "title": "Binary Search Algorithm",
+    "domain": "algorithms",
+    "capability_type": "explanation",
+    "intent_type": "learning",
+    "context_variants": [
+      "Beginner: a student who just learned about arrays and wants to understand searching",
+      "Expert: a developer asking about edge cases and performance characteristics",
+      "Confused: user who can't understand why we divide by 2 each time",
+      "Time-constrained: someone in an interview needing a quick refresher"
+    ],
+    "content": "Binary search is an efficient algorithm for finding a target value in a **sorted** array. Instead of checking every element one-by-one (linear search), it repeatedly halves the search space.\n\n**How it works:**\n1. Look at the middle element of the array.\n2. If it equals the target — done.\n3. If the target is smaller, search the left half.\n4. If the target is larger, search the right half.\n5. Repeat until found or the search space is empty.\n\n**Why it's fast:** Each step eliminates half the remaining elements. A sorted array of 1,000,000 elements needs at most 20 comparisons. This gives it O(log n) time complexity.\n\n**Key requirement:** The array must be sorted. Binary search fails on unsorted data.",
+    "code_examples": [
+      "def binary_search(arr, target):\n    left, right = 0, len(arr) - 1\n    while left <= right:\n        mid = (left + right) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return -1\n\n# Example usage:\nnums = [2, 5, 8, 12, 16, 23, 38, 56, 72, 91]\nprint(binary_search(nums, 23))  # Output: 5\nprint(binary_search(nums, 10))  # Output: -1"
+    ],
+    "step_by_step_explanation": [
+      "Step 1: Set left = 0 (start of array), right = len(arr) - 1 (end of array)",
+      "Step 2: Compute mid = (left + right) // 2 — the middle index",
+      "Step 3: Compare arr[mid] with the target",
+      "Step 4a: If arr[mid] == target, return mid (found!)",
+      "Step 4b: If arr[mid] < target, set left = mid + 1 (search right half)",
+      "Step 4c: If arr[mid] > target, set right = mid - 1 (search left half)",
+      "Step 5: Repeat steps 2–4 until left > right (not found, return -1)"
+    ],
+    "key_concepts": [
+      "Sorted array", "Divide and conquer", "O(log n) time complexity", "O(1) space complexity",
+      "Midpoint calculation", "Left/right pointers", "Loop invariant", "Integer overflow"
+    ],
+    "common_misconceptions": [
+      "Binary search works on unsorted arrays — it does NOT; sorting is a prerequisite",
+      "mid = (left + right) / 2 is always safe — in languages with fixed-size integers, this can overflow; use mid = left + (right - left) // 2",
+      "Binary search always returns the first occurrence — it returns any occurrence; finding the leftmost requires a modified version",
+      "Binary search is always better than linear search — for very small arrays or unsorted data, linear search may be preferred"
+    ],
+    "edge_cases": [
+      "Empty array: left > right immediately, return -1",
+      "Single-element array: check if arr[0] == target",
+      "Duplicate elements: standard binary search returns an arbitrary match; use 'leftmost' variant if needed",
+      "Target smaller than all elements or larger than all elements",
+      "Integer overflow when computing mid in languages like Java/C++"
+    ],
+    "real_world_examples": [
+      "Searching a word in a sorted dictionary",
+      "Finding a player rank in a sorted leaderboard",
+      "Locating a record by ID in a sorted database index",
+      "Git bisect — binary searching through commits to find a bug",
+      "Searching in standard library functions like Python's bisect module"
+    ],
+    "analogies": [
+      "Binary search is like guessing a number from 1–100: ask 'is it higher or lower than 50?', then 'higher or lower than 75?', etc. — you find it in at most 7 guesses",
+      "It's like finding a word in a physical dictionary — you open to the middle, see if you're too early or too late, then flip accordingly"
+    ],
+    "metadata": {
+      "difficulty_level": "beginner",
+      "tags": ["binary search", "algorithms", "search", "divide and conquer", "O(log n)", "arrays"],
+      "prerequisites": ["Arrays", "Basic loops and conditionals"]
+    },
+    "input_type": "text",
+    "output_type": "step_by_step",
+    "safety_notes": "",
+    "allowed_scope": "Can explain the algorithm, provide implementations in Python/Java/C++, discuss time/space complexity, and cover edge cases. Cannot guarantee correctness of custom user-provided data structures.",
+    "summary": "Binary search finds a target in a sorted array by repeatedly halving the search space, achieving O(log n) time complexity. It requires the input to be sorted and uses left/right pointers converging on the midpoint.",
+    "related_topics": ["Linear search", "Merge sort", "Quick sort", "Binary search trees", "Divide and conquer", "Python bisect module"],
+    "response_style": "tutorial"
+  }
+]

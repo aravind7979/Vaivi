@@ -1,0 +1,72 @@
+[
+  {
+    "document_id": "health_008_sleep_science",
+    "query_examples": [
+      "Why is sleep important for health?",
+      "What happens in the brain during sleep?",
+      "How many hours of sleep do adults need?",
+      "What is REM sleep and why does it matter?",
+      "Why do I feel groggy even after 8 hours of sleep?"
+    ],
+    "title": "Sleep Science: Stages, Function, and Optimal Rest",
+    "domain": "neuroscience_health",
+    "capability_type": "explanation",
+    "intent_type": "informational",
+    "context_variants": [
+      "Beginner: someone who wants to understand why they feel terrible after pulling an all-nighter",
+      "Expert: medical professional or neuroscience student studying sleep architecture",
+      "Confused: user who thinks more sleep is always better",
+      "Time-constrained: person wanting quick, actionable advice on improving sleep quality"
+    ],
+    "content": "Sleep is not passive rest — it is an active biological process essential for physical repair, memory consolidation, immune function, and emotional regulation.\n\n**Sleep stages (90-minute cycles, 4–6 cycles per night):**\n\n1. **NREM Stage 1 (N1):** Light sleep, easily awakened. ~5% of sleep.\n2. **NREM Stage 2 (N2):** Heart rate slows, body temperature drops. Sleep spindles and K-complexes appear. ~45% of sleep.\n3. **NREM Stage 3 (N3 / Slow-wave sleep):** Deep sleep. Most physically restorative. Growth hormone released. Hardest to awaken. ~25% of sleep.\n4. **REM (Rapid Eye Movement):** Brain is highly active. Dreaming occurs. Critical for memory consolidation, emotional processing, and creativity. ~25% of sleep.\n\n**Why sleep matters:**\n- **Memory:** The hippocampus replays and consolidates memories into the cortex during NREM; REM strengthens emotional memories and creative connections\n- **Glymphatic system:** During sleep (especially NREM3), cerebrospinal fluid flushes metabolic waste — including amyloid-beta plaques linked to Alzheimer's disease\n- **Immune function:** Cytokines and T-cells are produced during sleep; chronic sleep deprivation suppresses immune response\n- **Hormonal regulation:** Growth hormone, cortisol, and leptin/ghrelin (hunger hormones) are tightly coupled to sleep cycles\n\n**Recommended durations (National Sleep Foundation):**\n- Adults (18–64): 7–9 hours\n- Teenagers (14–17): 8–10 hours\n- Older adults (65+): 7–8 hours",
+    "code_examples": [],
+    "step_by_step_explanation": [
+      "Step 1: Sleep onset — adenosine (a sleep pressure molecule) builds up during waking hours; melatonin signals darkness to the brain, initiating sleep",
+      "Step 2: First half of the night is dominated by slow-wave sleep (N3) — physical restoration and immune function",
+      "Step 3: As the night progresses, REM periods lengthen — this is why cutting sleep short by 1–2 hours disproportionately reduces REM",
+      "Step 4: The glymphatic system opens fully during sleep, flushing neurotoxic metabolic waste",
+      "Step 5: On waking, adenosine is cleared and cortisol rises to promote alertness"
+    ],
+    "key_concepts": [
+      "REM sleep", "NREM sleep", "Slow-wave sleep", "Circadian rhythm", "Adenosine", "Melatonin",
+      "Sleep pressure (homeostatic drive)", "Glymphatic system", "Memory consolidation", "Sleep architecture",
+      "Sleep spindles", "K-complexes", "Amyloid-beta", "Sleep deprivation", "Chronotype"
+    ],
+    "common_misconceptions": [
+      "You can 'catch up' on sleep debt over the weekend — research shows chronic sleep debt impairs cognition even after recovery nights, and some immune damage is permanent",
+      "8 hours is optimal for everyone — individual sleep need is partly genetic; some people function well on 6, others need 9",
+      "Alcohol helps you sleep — alcohol suppresses REM sleep and fragments sleep in the second half of the night",
+      "Dreaming only happens in REM — some dreaming occurs in NREM, but vivid narrative dreams are predominantly REM",
+      "Feeling tired is the only sign of sleep deprivation — judgment, emotional regulation, and immune function degrade before you feel sleepy"
+    ],
+    "edge_cases": [
+      "Sleep inertia: grogginess upon waking — worst when woken from deep N3; alarms timed to lighter stages reduce this",
+      "Polyphasic sleep: some individuals sleep in multiple short periods; evidence for sustained cognitive performance is limited",
+      "Short sleeper gene (ADRB1 mutation): rare individuals (<1% of population) genuinely function well on 4–6 hours",
+      "Jet lag: disrupts circadian rhythm; recovery takes roughly 1 day per time zone crossed",
+      "Sleep disorders (insomnia, sleep apnea, narcolepsy) fundamentally alter sleep architecture and require clinical management"
+    ],
+    "real_world_examples": [
+      "Medical residents: studies show sleep-deprived residents make significantly more errors, prompting duty-hour restrictions",
+      "Athletic performance: NBA players who sleep 10 hours show measurably improved shooting accuracy and reaction time",
+      "Alzheimer's research: poor sleep in midlife is associated with higher amyloid-beta accumulation and increased dementia risk",
+      "Daylight saving time: the Monday after springing forward shows a 24% spike in heart attacks"
+    ],
+    "analogies": [
+      "The glymphatic system is like a dishwasher for the brain — it only runs at night, and if you skip the cycle, toxins build up",
+      "Sleep stages are like different departments of a hospital running different shifts — the physical repair crew (N3) works early in the night, the memory consolidation team (REM) works in the early morning"
+    ],
+    "metadata": {
+      "difficulty_level": "beginner",
+      "tags": ["sleep", "neuroscience", "health", "REM", "circadian rhythm", "memory", "glymphatic system"],
+      "prerequisites": ["None — accessible to general audience"]
+    },
+    "input_type": "text",
+    "output_type": "text",
+    "safety_notes": "This information is educational and general. For sleep disorders (insomnia, sleep apnea, narcolepsy, restless legs), consult a healthcare provider or sleep specialist.",
+    "allowed_scope": "Explains sleep science, stages, functions, and general hygiene recommendations. Does not diagnose sleep disorders or recommend sleep medications.",
+    "summary": "Sleep is a multi-stage biological process critical for memory consolidation, immune function, physical repair, and metabolic waste clearance. REM sleep is essential for emotional and cognitive health, while deep NREM supports physical restoration — adults need 7–9 hours nightly.",
+    "related_topics": ["Circadian rhythm", "Melatonin and chronobiology", "Sleep hygiene", "Cognitive performance", "Mental health and sleep", "Alzheimer's disease"],
+    "response_style": "explanation"
+  }
+]

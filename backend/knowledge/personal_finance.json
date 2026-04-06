@@ -1,0 +1,73 @@
+[
+  {
+    "document_id": "finance_007_compound_interest",
+    "query_examples": [
+      "How does compound interest work?",
+      "What is the difference between simple and compound interest?",
+      "Explain the Rule of 72 for investments",
+      "How much will my investment grow with compound interest over 20 years?",
+      "Why is starting to invest early so important?"
+    ],
+    "title": "Compound Interest and Wealth Growth",
+    "domain": "personal_finance",
+    "capability_type": "explanation",
+    "intent_type": "learning",
+    "context_variants": [
+      "Beginner: 22-year-old just starting their first job, wondering what to do with savings",
+      "Expert: financial planner analyzing portfolio growth scenarios for clients",
+      "Confused: user who doesn't understand why the growth accelerates over time",
+      "Time-constrained: someone who wants the key actionable insight in 30 seconds"
+    ],
+    "content": "Compound interest is interest calculated on both the original principal AND the interest already earned. This creates exponential growth over time — the reason why small, early investments become large sums.\n\n**Simple interest (for comparison):** Interest only on the principal.\n  A = P × (1 + r×t)\n\n**Compound interest:**\n  A = P × (1 + r/n)^(n×t)\n  Where: P = principal, r = annual interest rate, n = compounding frequency/year, t = time in years\n\n**The power of compounding:**\n$10,000 invested at 7% annual return:\n- After 10 years: $19,672\n- After 20 years: $38,697\n- After 30 years: $76,123\n- After 40 years: $149,745\n\nNotice the growth accelerates — the last 10 years produce more than the first 30 combined.\n\n**Rule of 72:** Divide 72 by the annual interest rate to estimate how long it takes to double your money. At 6% → 72/6 = 12 years to double. At 9% → 8 years.\n\n**Compounding frequency matters:** Daily compounding yields slightly more than annual compounding at the same rate, but the difference is small compared to the rate and time horizon.",
+    "code_examples": [
+      "def compound_interest(principal, annual_rate, years, n=12):\n    \"\"\"\n    principal: initial investment ($)\n    annual_rate: annual interest rate as decimal (e.g. 0.07 for 7%)\n    years: number of years invested\n    n: compounding periods per year (12 = monthly, 365 = daily)\n    \"\"\"\n    amount = principal * (1 + annual_rate / n) ** (n * years)\n    return round(amount, 2)\n\ndef rule_of_72(annual_rate_percent):\n    \"\"\"Estimate years to double at a given annual rate\"\"\"\n    return 72 / annual_rate_percent\n\n# Example: $10,000 at 7% for 30 years, compounded monthly\nresult = compound_interest(10000, 0.07, 30)\nprint(f'Final value: ${result:,.2f}')  # $81,136.98\n\n# Rule of 72 at 7%\ndouble_time = rule_of_72(7)\nprint(f'Years to double: {double_time:.1f}')  # 10.3 years"
+    ],
+    "step_by_step_explanation": [
+      "Step 1: Invest principal P",
+      "Step 2: After year 1, earn interest — you now have P + P×r = P(1+r)",
+      "Step 3: Year 2 interest is calculated on P(1+r), not just P — you earn interest on the previous interest",
+      "Step 4: After t years: A = P(1+r)^t — exponential, not linear growth",
+      "Step 5: More frequent compounding (monthly vs annually) slightly increases the effective rate via the (1+r/n)^n term",
+      "Step 6: Apply Rule of 72 to quickly estimate doubling time: years ≈ 72 / (rate %)"
+    ],
+    "key_concepts": [
+      "Principal", "Interest rate", "Compounding frequency", "Exponential growth", "Rule of 72",
+      "Annual Percentage Yield (APY)", "Annual Percentage Rate (APR)", "Time value of money",
+      "Opportunity cost", "Reinvestment", "Inflation-adjusted return"
+    ],
+    "common_misconceptions": [
+      "Compound interest grows linearly — it grows exponentially; the curve is slow at first but accelerates dramatically",
+      "Starting 5 years later doesn't matter much — starting at 25 vs 30 at 7% can mean hundreds of thousands of dollars less at retirement",
+      "High compounding frequency (daily vs monthly) makes a huge difference — at typical rates, the difference is small compared to the effect of rate and time",
+      "APR and APY are the same — APY accounts for compounding; it is always ≥ APR"
+    ],
+    "edge_cases": [
+      "Negative real returns: if inflation exceeds your interest rate, your purchasing power shrinks even with positive nominal growth",
+      "Compounding against you (debt): credit card interest at 20% APR compounds dramatically — the same mechanism accelerates debt",
+      "Continuous compounding: as n → ∞, A = Pe^(rt) — the theoretical maximum",
+      "Taxes on interest: in taxable accounts, annual taxes on earnings reduce effective compounding rate significantly"
+    ],
+    "real_world_examples": [
+      "Index fund investing: $500/month at 7% real return over 30 years grows to ~$567,000",
+      "Credit card debt: $5,000 balance at 22% APR compounds to $32,000+ in 10 years if unpaid",
+      "Warren Buffett's wealth: ~90% of it was accumulated after age 65, a direct result of compound growth over 60+ years",
+      "529 college savings plans: tax-advantaged compounding for education savings"
+    ],
+    "analogies": [
+      "Compound interest is like a snowball rolling downhill — it starts small, but as it rolls it accumulates more snow (interest on interest) and grows faster and faster",
+      "The first $100,000 is the hardest — each subsequent $100,000 takes less time because the compounding base is larger"
+    ],
+    "metadata": {
+      "difficulty_level": "beginner",
+      "tags": ["compound interest", "investing", "personal finance", "Rule of 72", "exponential growth", "wealth building"],
+      "prerequisites": ["Basic arithmetic and percentages"]
+    },
+    "input_type": "text",
+    "output_type": "structured",
+    "safety_notes": "This is for educational purposes only. It does not constitute financial advice. Actual investment returns vary; past performance does not guarantee future results. Consult a licensed financial advisor for personal investment decisions.",
+    "allowed_scope": "Explains the math and intuition of compound interest, Rule of 72, and practical implications for saving and debt. Does not provide specific investment recommendations.",
+    "summary": "Compound interest earns returns on both principal and previously earned interest, producing exponential growth. The earlier you start investing, the more powerful compounding becomes — the Rule of 72 shows doubling time equals roughly 72 divided by the annual rate.",
+    "related_topics": ["Time value of money", "Investment vehicles (stocks, bonds, ETFs)", "Inflation", "Retirement planning", "Dollar-cost averaging", "Debt payoff strategies"],
+    "response_style": "explanation"
+  }
+]

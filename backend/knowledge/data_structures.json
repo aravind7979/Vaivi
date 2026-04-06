@@ -1,0 +1,75 @@
+[
+  {
+    "document_id": "ds_014_hash_table",
+    "query_examples": [
+      "How does a hash table work?",
+      "What is a hash function and why does it matter?",
+      "Explain hash collision and how to handle it",
+      "When should I use a hash map vs a tree map?",
+      "Why is hash table lookup O(1) on average?"
+    ],
+    "title": "Hash Tables: Design and Implementation",
+    "domain": "data_structures",
+    "capability_type": "explanation",
+    "intent_type": "learning",
+    "context_variants": [
+      "Beginner: CS student who's learned arrays and linked lists and is moving on to hash maps",
+      "Expert: engineer optimizing cache design or building a custom hash table for a performance-critical system",
+      "Confused: user who doesn't understand why a hash table with 1000 slots can store millions of items",
+      "Time-constrained: developer in an interview needing to explain hash tables clearly"
+    ],
+    "content": "A hash table (also called a hash map or dictionary) is a data structure that stores key-value pairs with average O(1) lookup, insertion, and deletion. It achieves this speed by using a hash function to map keys to array indices.\n\n**Core mechanism:**\n1. You have an array of fixed size N (e.g., 128 slots)\n2. To store key 'alice': apply the hash function → hash('alice') % 128 = 43 → store at index 43\n3. To retrieve 'alice': hash('alice') % 128 = 43 → look up index 43 → return value\n\n**The hash function:** Converts any key into an integer. A good hash function:\n- Is deterministic (same input → same output, always)\n- Distributes keys uniformly across the array\n- Is fast to compute\n\n**Collisions:** When two keys hash to the same index.\n- **Chaining:** Each slot holds a linked list of all items that hash there. Lookup traverses the list.\n- **Open addressing:** If a slot is taken, probe neighboring slots (linear probing, quadratic probing, or double hashing) until an empty one is found.\n\n**Load factor:** Ratio of stored items to total slots. As load factor increases, collision frequency increases and O(1) degrades. Most implementations resize (rehash) when load factor exceeds 0.7–0.75.",
+    "code_examples": [
+      "class HashTable:\n    def __init__(self, size=128):\n        self.size = size\n        self.table = [[] for _ in range(size)]  # Chaining with lists\n\n    def _hash(self, key):\n        return hash(key) % self.size\n\n    def set(self, key, value):\n        idx = self._hash(key)\n        for pair in self.table[idx]:\n            if pair[0] == key:\n                pair[1] = value  # Update existing key\n                return\n        self.table[idx].append([key, value])\n\n    def get(self, key):\n        idx = self._hash(key)\n        for pair in self.table[idx]:\n            if pair[0] == key:\n                return pair[1]\n        raise KeyError(key)\n\n    def delete(self, key):\n        idx = self._hash(key)\n        self.table[idx] = [p for p in self.table[idx] if p[0] != key]\n\n# Usage\nht = HashTable()\nht.set('name', 'Alice')\nht.set('age', 30)\nprint(ht.get('name'))  # Alice"
+    ],
+    "step_by_step_explanation": [
+      "Step 1: Initialize an array of N empty slots (buckets)",
+      "Step 2: To insert (key, value): compute index = hash_function(key) % N",
+      "Step 3: Store the pair at index (handle collisions via chaining or open addressing)",
+      "Step 4: To look up a key: compute index = hash_function(key) % N, then search that bucket",
+      "Step 5: Monitor the load factor — when items/slots > 0.75, create a larger array and rehash all items",
+      "Step 6: To delete: find the bucket, remove the (key, value) pair from it"
+    ],
+    "key_concepts": [
+      "Hash function", "Collision", "Chaining", "Open addressing", "Load factor", "Rehashing",
+      "Bucket", "Linear probing", "Quadratic probing", "Double hashing", "Amortized O(1)",
+      "Worst-case O(n)", "Dictionary (Python)", "HashMap (Java)", "unordered_map (C++)"
+    ],
+    "common_misconceptions": [
+      "Hash table lookup is always O(1) — it's O(1) on average; worst case (all keys collide into one bucket) is O(n)",
+      "A good hash function is hard to write — for most applications, built-in hash functions (Python's hash(), Java's hashCode()) are excellent",
+      "Hash tables are unordered, so they're slower than sorted structures — for lookup, they're faster; for range queries or ordered traversal, a balanced BST (TreeMap) is better",
+      "Increasing table size eliminates collisions — it reduces them; cryptographic hash functions minimize collisions but are too slow for data structures"
+    ],
+    "edge_cases": [
+      "Hash table with all keys colliding: degrades to O(n) — catastrophic in adversarial inputs; mitigated by randomized hash seeds (Python does this)",
+      "Mutable keys: if a key changes after insertion, its hash changes and the item becomes unretrievable — hash tables require immutable keys (in Python, only hashable types like str, int, tuple)",
+      "None/null as key: many implementations support null keys with special handling",
+      "Floating point keys: precision issues can make two 'equal' floats hash differently",
+      "Very high load factor: performance degrades from O(1) toward O(n); always resize at appropriate threshold"
+    ],
+    "real_world_examples": [
+      "Python dictionaries and sets are hash tables under the hood",
+      "Database indexes using hash structures for exact-match queries",
+      "DNS caches using hash tables to map domain names to IP addresses",
+      "Compiler symbol tables for variable name lookup during compilation",
+      "Caching systems (Memcached, Redis) for O(1) key-value retrieval"
+    ],
+    "analogies": [
+      "A hash table is like a library with a magic index — instead of searching every shelf, a librarian runs the book title through a formula that instantly tells you exactly which shelf to check",
+      "A collision is when two books are assigned the same shelf by the formula — you handle it either by chaining books on the same shelf (chaining) or by placing the second book on the next available shelf (open addressing)"
+    ],
+    "metadata": {
+      "difficulty_level": "intermediate",
+      "tags": ["hash table", "data structures", "hash function", "collision", "O(1)", "dictionary", "chaining", "open addressing"],
+      "prerequisites": ["Arrays", "Linked lists", "Basic time complexity notation"]
+    },
+    "input_type": "text",
+    "output_type": "step_by_step",
+    "safety_notes": "",
+    "allowed_scope": "Can explain hash table internals, collision handling, performance characteristics, and implementation. Can implement custom hash tables in Python, Java, or C++.",
+    "summary": "Hash tables achieve average O(1) lookup by using a hash function to map keys to array indices. Collisions are handled via chaining or open addressing, and performance is maintained by resizing when the load factor exceeds ~0.75.",
+    "related_topics": ["Binary search trees", "Bloom filters", "Consistent hashing", "Sets", "Memoization", "Database indexing"],
+    "response_style": "tutorial"
+  }
+]

@@ -1,0 +1,71 @@
+[
+  {
+    "document_id": "psych_006_cognitive_bias",
+    "query_examples": [
+      "What are cognitive biases and why do we have them?",
+      "Explain confirmation bias with examples",
+      "List the most common cognitive biases",
+      "How do cognitive biases affect decision making?",
+      "What is the difference between heuristics and biases?"
+    ],
+    "title": "Cognitive Biases and Heuristics",
+    "domain": "cognitive_psychology",
+    "capability_type": "explanation",
+    "intent_type": "informational",
+    "context_variants": [
+      "Beginner: curious person who just heard the term cognitive bias",
+      "Expert: behavioral economist studying how biases affect market decisions",
+      "Confused: user who thinks biases are the same as prejudices",
+      "Time-constrained: manager wanting to run better meetings with fewer biased decisions"
+    ],
+    "content": "Cognitive biases are systematic, repeatable errors in thinking that cause people to deviate from rational judgment. They arise from mental shortcuts (heuristics) that the brain uses to process information quickly — these shortcuts are often useful but can lead to predictable mistakes.\n\n**Why biases exist:** The human brain processes ~11 million bits of sensory input per second but can only consciously handle ~40–50 bits. Heuristics evolved to manage this gap efficiently. Biases are the bugs that come with this evolved feature.\n\n**Key distinction:** A *heuristic* is a mental shortcut (often correct). A *bias* is when that shortcut leads you astray.\n\n**Most impactful biases:**\n\n1. **Confirmation bias:** Seeking information that confirms existing beliefs and ignoring contradicting evidence. 'I believe X, therefore I only read sources that support X.'\n\n2. **Availability heuristic:** Judging the frequency of events by how easily examples come to mind. Plane crashes feel common because they're memorable; car deaths are underestimated.\n\n3. **Anchoring bias:** Over-relying on the first piece of information encountered. A $1000 item marked down to $700 feels like a deal even if $700 is still overpriced.\n\n4. **Dunning-Kruger effect:** People with limited knowledge in a domain overestimate their competence.\n\n5. **Sunk cost fallacy:** Continuing a failing endeavor because of past investment rather than future value.\n\n6. **In-group bias:** Favoring members of one's own group over outsiders.\n\n7. **Recency bias:** Overweighting recent events when predicting the future.",
+    "code_examples": [],
+    "step_by_step_explanation": [
+      "Step 1: Recognize that the brain uses two systems — fast/intuitive (System 1) and slow/analytical (System 2) — per Kahneman's dual-process theory",
+      "Step 2: Understand that heuristics are System 1 shortcuts — rapid, automatic, and often accurate",
+      "Step 3: Recognize that cognitive biases emerge when System 1 shortcuts are applied inappropriately",
+      "Step 4: For each decision domain, identify which biases are most likely to apply",
+      "Step 5: Employ debiasing techniques — slow down, seek disconfirming evidence, use checklists, and rely on data"
+    ],
+    "key_concepts": [
+      "Heuristics", "System 1 and System 2 thinking", "Confirmation bias", "Anchoring", "Availability heuristic",
+      "Dunning-Kruger effect", "Sunk cost fallacy", "In-group bias", "Status quo bias", "Framing effect",
+      "Loss aversion", "Cognitive load", "Metacognition", "Debiasing"
+    ],
+    "common_misconceptions": [
+      "Cognitive biases are the same as prejudice — biases are about systematic errors in reasoning, not necessarily about social groups",
+      "Smart people are immune to cognitive biases — intelligence does not protect against most biases; awareness and specific training do (partially)",
+      "You can eliminate cognitive biases entirely — most are deeply embedded; the goal is to recognize and mitigate, not eliminate them",
+      "All biases are harmful — many heuristics are highly adaptive and efficient in their appropriate contexts"
+    ],
+    "edge_cases": [
+      "Some biases interact: anchoring combined with loss aversion makes initial price framing extremely powerful in negotiations",
+      "Cultural variation: some biases are stronger in individualist vs collectivist cultures",
+      "Bias blind spot: people are often better at detecting others' biases than their own",
+      "Debiasing attempts can backfire: overcorrecting for a known bias can introduce new errors"
+    ],
+    "real_world_examples": [
+      "Hiring: interviewers anchored by a candidate's early answer rate the entire interview higher or lower accordingly",
+      "Investing: recency bias causes investors to buy after market peaks and sell after crashes",
+      "Medical diagnosis: availability bias leads doctors to overdiagnose rare conditions they recently encountered",
+      "Product pricing: $9.99 vs $10.00 exploits anchoring and left-digit bias",
+      "News consumption: confirmation bias drives people into information echo chambers"
+    ],
+    "analogies": [
+      "Cognitive biases are like optical illusions for the mind — even when you know the illusion is there, you still see it. The visual system hasn't changed; it's just being tricked",
+      "Heuristics are like keyboard shortcuts — they work most of the time and save effort, but occasionally you hit the wrong one"
+    ],
+    "metadata": {
+      "difficulty_level": "beginner",
+      "tags": ["cognitive bias", "psychology", "decision making", "heuristics", "behavioral economics", "Kahneman", "critical thinking"],
+      "prerequisites": ["None — accessible to general audience"]
+    },
+    "input_type": "text",
+    "output_type": "text",
+    "safety_notes": "",
+    "allowed_scope": "Explains cognitive biases, their origins, examples, and mitigation strategies. Does not provide clinical psychological assessment or therapy guidance.",
+    "summary": "Cognitive biases are systematic thinking errors arising from mental shortcuts (heuristics) evolved to handle information overload. Key examples include confirmation bias, anchoring, and the sunk cost fallacy — all of which can be mitigated through awareness and structured decision-making.",
+    "related_topics": ["Behavioral economics", "Dual process theory", "Decision making", "Prospect theory", "Nudge theory", "Critical thinking", "Metacognition"],
+    "response_style": "explanation"
+  }
+]

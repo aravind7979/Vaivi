@@ -1,0 +1,71 @@
+[
+  {
+    "document_id": "comm_009_professional_email",
+    "query_examples": [
+      "How do I write a professional email asking for a raise?",
+      "Write an email declining a job offer politely",
+      "Help me write a follow-up email after a job interview",
+      "How should I email my manager about a missed deadline?",
+      "Rewrite this email to sound more professional"
+    ],
+    "title": "Writing Effective Professional Emails",
+    "domain": "business_communication",
+    "capability_type": "creative_generation",
+    "intent_type": "transactional",
+    "context_variants": [
+      "Beginner: recent graduate sending their first professional email",
+      "Expert: executive wanting to refine a high-stakes message before sending",
+      "Confused: user unsure how formal to be with an internal team email",
+      "Time-constrained: professional who needs a polished email drafted in 2 minutes"
+    ],
+    "content": "Effective professional emails are clear, respectful, appropriately concise, and action-oriented. Poor email communication is one of the most common workplace friction points.\n\n**Core structure of any professional email:**\n1. **Subject line:** Specific and informative. 'Question' is bad. 'Request for Q3 Budget Approval — By Friday' is good.\n2. **Greeting:** Match formality to the relationship. 'Hi [Name]' is fine for colleagues; 'Dear [Name]' for formal/external.\n3. **Opening line:** State the purpose immediately. Don't bury the lead.\n4. **Body:** One key message per email. Use short paragraphs (2–3 sentences). Bullet points for multiple items.\n5. **Call to action:** Be explicit: 'Please confirm by Thursday' not 'Let me know your thoughts.'\n6. **Closing:** 'Best regards,' or 'Thank you,' followed by your name and contact info.\n\n**Tone calibration:**\n- Internal team: conversational but clear\n- Manager/executive: direct, solution-first, no over-explanation\n- Client/external: professional, warm, error-free\n- Difficult message (apology, decline, complaint): lead with empathy, state facts, offer path forward\n\n**Common scenarios:**\n- Raise request: frame around demonstrated value, not personal need\n- Interview follow-up: within 24 hours, specific appreciation + reiterate fit\n- Declining offer: gracious, no lengthy explanation needed\n- Missed deadline: own it immediately, state recovery plan, no excuses",
+    "code_examples": [],
+    "step_by_step_explanation": [
+      "Step 1: Identify the single purpose of the email before writing",
+      "Step 2: Write the subject line last — make it a summary of the email's purpose and any deadline",
+      "Step 3: Start the body with the most important sentence — what you need or why you're writing",
+      "Step 4: Provide only the context the reader needs to take action — no life history",
+      "Step 5: State a clear, specific call to action with a deadline if applicable",
+      "Step 6: Read it aloud before sending — if it sounds awkward spoken, rewrite it",
+      "Step 7: Check: would you be comfortable if this email were forwarded to your skip-level manager?"
+    ],
+    "key_concepts": [
+      "Subject line", "Call to action (CTA)", "Tone matching", "Bottom-line-up-front (BLUF)",
+      "Active vs passive voice", "Reply-all etiquette", "CC vs BCC", "Thread management",
+      "Asynchronous communication", "Email vs Slack decision", "Proofreading"
+    ],
+    "common_misconceptions": [
+      "Longer emails demonstrate more effort — long emails are often skipped or skimmed; concision signals respect for the reader's time",
+      "Formal language is always more professional — overly formal language can feel cold or even passive-aggressive in modern workplaces",
+      "You should explain everything to avoid follow-up questions — include just enough context; anticipate the one or two most likely questions",
+      "Adding 'per my last email' is neutral — it is widely read as passive-aggressive and should generally be avoided"
+    ],
+    "edge_cases": [
+      "Email to a global team: be mindful of idioms, time zones when setting deadlines, and cultural norms around directness",
+      "Sensitive HR topics: use email sparingly — many sensitive conversations are better handled verbally first, with email as written follow-up",
+      "Legal risk: once sent, email is a legal record; avoid emotional language when dealing with disputes",
+      "Reply-all chain: when breaking out of a long chain, start a new thread with a clear summary"
+    ],
+    "real_world_examples": [
+      "Raise negotiation email: opens with specific achievements and market data, not 'I need more money'",
+      "Post-interview thank you: sent within 24 hours, mentions a specific conversation point to show attentiveness",
+      "Project delay notice: sent before the deadline, not after, with a revised timeline attached"
+    ],
+    "analogies": [
+      "A professional email is like a newspaper headline + article: the subject line is the headline (complete, informative), the first sentence is the lead (the whole story in brief), and the rest fills in context",
+      "Think of your reader as a busy surgeon between operations — give them exactly what they need to make a decision, no more"
+    ],
+    "metadata": {
+      "difficulty_level": "beginner",
+      "tags": ["email", "professional communication", "writing", "workplace", "business communication", "etiquette"],
+      "prerequisites": ["Basic writing skills"]
+    },
+    "input_type": "text",
+    "output_type": "text",
+    "safety_notes": "",
+    "allowed_scope": "Can draft, rewrite, and advise on professional emails for most workplace scenarios. Does not draft emails for harassment, misrepresentation, or legal disputes without appropriate caveats.",
+    "summary": "Effective professional emails lead with purpose, state a clear call to action, match tone to the relationship, and respect the reader's time with concise language. Subject lines should be specific, and length should match the complexity of the request — no more.",
+    "related_topics": ["Slack vs email decision", "Meeting request etiquette", "Workplace communication styles", "Difficult conversations", "Networking messages", "Cover letters"],
+    "response_style": "tutorial"
+  }
+]

@@ -1,0 +1,77 @@
+[
+  {
+    "document_id": "ml_015_transformer_attention",
+    "query_examples": [
+      "How does the attention mechanism in transformers work?",
+      "Explain self-attention in simple terms",
+      "What are query, key, and value in attention?",
+      "Why did transformers replace RNNs for NLP?",
+      "What is multi-head attention and why use multiple heads?"
+    ],
+    "title": "Transformer Self-Attention Mechanism",
+    "domain": "natural_language_processing",
+    "capability_type": "explanation",
+    "intent_type": "learning",
+    "context_variants": [
+      "Beginner: developer who uses GPT APIs and wants to understand what's actually happening",
+      "Expert: ML researcher implementing a custom attention variant",
+      "Confused: user who has read the 'Attention is All You Need' paper but can't connect the math to the intuition",
+      "Time-constrained: engineer preparing for an ML interview tomorrow"
+    ],
+    "content": "The attention mechanism is what allows transformer models to understand context — the idea that the meaning of a word depends on the other words around it.\n\n**The core idea:** When processing each word (token), attention lets the model look at every other word in the sequence and decide which ones are most relevant. A word can 'attend' to words far away in the sentence, which is why transformers outperform RNNs on long-range dependencies.\n\n**Query, Key, Value (QKV):**\nFor each token, the model creates three vectors:\n- **Query (Q):** 'What am I looking for?'\n- **Key (K):** 'What do I offer as context?'\n- **Value (V):** 'What information do I actually carry?'\n\nAttention score between token i and token j:\n  score(i,j) = Q_i · K_j / √d_k\n\nScores are softmax-normalized to get attention weights (sum to 1). The output for token i is the weighted sum of all value vectors:\n  output_i = Σ weight(i,j) × V_j\n\n**Multi-head attention:** Instead of one attention computation, the model runs H parallel attention heads, each learning to focus on different types of relationships (syntax, semantics, coreference, etc.). Their outputs are concatenated and projected.\n\n**Why transformers beat RNNs:**\n- RNNs process tokens sequentially — long-range dependencies are compressed through many steps\n- Attention directly connects any two tokens in O(1) steps regardless of distance\n- Transformers parallelize training across all positions simultaneously",
+    "code_examples": [
+      "import torch\nimport torch.nn.functional as F\nimport math\n\ndef scaled_dot_product_attention(Q, K, V, mask=None):\n    \"\"\"\n    Q, K, V: (batch, seq_len, d_k)\n    \"\"\"\n    d_k = Q.size(-1)\n    # Compute raw attention scores\n    scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(d_k)\n    if mask is not None:\n        scores = scores.masked_fill(mask == 0, float('-inf'))\n    # Normalize to probabilities\n    weights = F.softmax(scores, dim=-1)\n    # Weighted sum of values\n    return torch.matmul(weights, V), weights\n\n# Example: seq_len=5 tokens, d_k=64\nbatch_size, seq_len, d_k = 2, 5, 64\nQ = torch.randn(batch_size, seq_len, d_k)\nK = torch.randn(batch_size, seq_len, d_k)\nV = torch.randn(batch_size, seq_len, d_k)\n\noutput, attn_weights = scaled_dot_product_attention(Q, K, V)\nprint(output.shape)       # (2, 5, 64)\nprint(attn_weights.shape) # (2, 5, 5) — each token's attention over all tokens"
+    ],
+    "step_by_step_explanation": [
+      "Step 1: Embed each input token as a vector of dimension d_model",
+      "Step 2: Project each embedding into Q, K, V vectors using learned weight matrices W_Q, W_K, W_V",
+      "Step 3: Compute attention scores: score(i,j) = Q_i · K_j / √d_k (dot product, scaled to prevent saturation)",
+      "Step 4: Apply softmax to scores to get attention weights (each row sums to 1)",
+      "Step 5: Compute the output for each token as the weighted sum of all value vectors",
+      "Step 6: Run H attention heads in parallel (multi-head attention), each with separate projections",
+      "Step 7: Concatenate all head outputs and project through W_O to get the final attention output",
+      "Step 8: Add residual connection and layer norm, then pass through a feed-forward network"
+    ],
+    "key_concepts": [
+      "Self-attention", "Query/Key/Value (QKV)", "Scaled dot-product attention", "Attention weights",
+      "Multi-head attention", "Positional encoding", "Transformer block", "Encoder/decoder",
+      "Causal masking", "Key dimension (d_k)", "Feed-forward network", "Residual connection",
+      "Layer normalization", "Token embedding", "Context window"
+    ],
+    "common_misconceptions": [
+      "Attention allows models to 'look up facts' — attention reweights information within the context window; factual knowledge is stored in the feed-forward layers (the model's 'memory')",
+      "More attention heads are always better — heads have fixed total dimension budget; more heads means smaller per-head dimension, with diminishing returns",
+      "Attention captures meaning directly — it captures weighted similarity between token representations; meaning emerges through training, not from the mechanism alone",
+      "Self-attention and cross-attention are the same — self-attention attends within one sequence; cross-attention (in decoder) attends from one sequence to another (e.g., decoder attending to encoder output)"
+    ],
+    "edge_cases": [
+      "O(n²) memory complexity: attention requires a n×n score matrix, making it quadratic in sequence length — a bottleneck for very long contexts; addressed by sparse attention (Longformer, BigBird), linear attention, or flash attention",
+      "Causal masking in autoregressive models: each position can only attend to previous positions, not future ones — enforced by setting future positions to -∞ before softmax",
+      "Positional encoding: self-attention is permutation-invariant (order doesn't matter), so position must be explicitly injected via sinusoidal or learned encodings",
+      "Key-query dimension mismatch: Q and K must have the same dimension for the dot product; V can have a different dimension"
+    ],
+    "real_world_examples": [
+      "GPT models use decoder-only transformers with causal self-attention for text generation",
+      "BERT uses encoder-only transformers with bidirectional self-attention for understanding tasks",
+      "Machine translation (e.g., Google Translate) uses encoder-decoder architecture with cross-attention",
+      "AlphaFold2 uses attention over residue pairs to predict protein structure",
+      "Vision Transformers (ViT) apply self-attention to image patches for computer vision"
+    ],
+    "analogies": [
+      "Attention is like spotlights on a stage: when processing the word 'bank' in 'the river bank', the model turns bright spotlights onto words like 'river' and 'water' and dim ones onto everything else — the context determines which spotlight combination produces the right meaning",
+      "QKV is like a library database: Q is your search query, K is the index of each book, and V is the book's content. The dot product tells you how relevant each book is to your query, and the output is a blend of all books weighted by relevance"
+    ],
+    "metadata": {
+      "difficulty_level": "advanced",
+      "tags": ["transformer", "self-attention", "NLP", "deep learning", "QKV", "multi-head attention", "BERT", "GPT", "neural networks"],
+      "prerequisites": ["Linear algebra (dot products, matrix multiplication)", "Neural network basics", "Softmax function", "Backpropagation"]
+    },
+    "input_type": "text",
+    "output_type": "step_by_step",
+    "safety_notes": "",
+    "allowed_scope": "Explains self-attention, multi-head attention, QKV mechanism, and the transformer architecture. Can implement attention from scratch. Does not cover all variants (sparse, linear, cross-attention) in equal depth.",
+    "summary": "Self-attention allows each token to gather context from all other tokens by computing QKV dot-product scores, normalizing them with softmax, and aggregating value vectors. Multi-head attention runs this process in parallel with different learned projections, capturing diverse linguistic relationships simultaneously.",
+    "related_topics": ["Positional encoding", "Transformer architecture", "BERT and GPT model families", "Flash Attention", "Sparse attention", "Cross-attention", "Fine-tuning language models"],
+    "response_style": "explanation"
+  }
+]

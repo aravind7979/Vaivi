@@ -1,0 +1,73 @@
+[
+  {
+    "document_id": "reasoning_013_logical_fallacies",
+    "query_examples": [
+      "What are logical fallacies and how do I spot them?",
+      "Give me examples of common logical fallacies",
+      "What is a straw man argument?",
+      "How do I argue better and avoid logical errors?",
+      "Explain the ad hominem fallacy"
+    ],
+    "title": "Logical Fallacies and Critical Reasoning",
+    "domain": "logic_and_critical_thinking",
+    "capability_type": "explanation",
+    "intent_type": "learning",
+    "context_variants": [
+      "Beginner: student learning to debate or write argumentative essays",
+      "Expert: philosopher or lawyer analyzing the formal validity of arguments",
+      "Confused: user who thinks pointing out a fallacy wins an argument",
+      "Time-constrained: someone preparing for a debate in an hour"
+    ],
+    "content": "A logical fallacy is an error in reasoning that makes an argument invalid or weak, even if the conclusion happens to be true. Recognizing fallacies sharpens both critical thinking and your own argumentation.\n\n**Formal vs Informal fallacies:**\n- *Formal fallacies:* invalid logical structure (e.g., affirming the consequent: 'If P then Q; Q; therefore P')\n- *Informal fallacies:* errors in content, context, or relevance (most common in everyday discourse)\n\n**Most common informal fallacies:**\n\n1. **Ad hominem:** Attacking the person rather than the argument. 'You can't trust her climate research — she drives an SUV.'\n\n2. **Straw man:** Misrepresenting someone's argument to make it easier to attack. 'You want to cut the defense budget? So you want us to have no military?'\n\n3. **False dichotomy:** Presenting only two options when others exist. 'You're either with us or against us.'\n\n4. **Slippery slope:** Claiming that one event will inevitably cause a chain of extreme events without evidence. 'If we allow X, next we'll have Y, then Z.'\n\n5. **Appeal to authority:** Citing an expert in an unrelated field. 'This actor says vaccine X is dangerous — I believe them.'\n\n6. **Circular reasoning (begging the question):** Using the conclusion as a premise. 'The Bible is true because it says so in the Bible.'\n\n7. **Hasty generalization:** Drawing a broad conclusion from insufficient data. 'I met two rude tourists from Country X — people from there are all rude.'\n\n8. **Post hoc ergo propter hoc:** Confusing correlation with causation. 'I wore my lucky socks and we won — the socks caused the win.'",
+    "code_examples": [],
+    "step_by_step_explanation": [
+      "Step 1: Identify the claim being made",
+      "Step 2: Identify the evidence or reasoning offered to support the claim",
+      "Step 3: Check: does the evidence actually support the claim, or does it rely on an unstated assumption?",
+      "Step 4: Ask: is the argument attacking the idea or the person?",
+      "Step 5: Check for false dichotomies — are there more than two options?",
+      "Step 6: Verify statistics and examples — are they representative, or cherry-picked?",
+      "Step 7: Distinguish correlation from causation when data is cited as evidence"
+    ],
+    "key_concepts": [
+      "Formal fallacy", "Informal fallacy", "Ad hominem", "Straw man", "False dichotomy",
+      "Slippery slope", "Appeal to authority", "Circular reasoning", "Hasty generalization",
+      "Post hoc ergo propter hoc", "Burden of proof", "Modus ponens", "Affirming the consequent",
+      "Red herring", "Tu quoque", "Argument from ignorance"
+    ],
+    "common_misconceptions": [
+      "Identifying a fallacy automatically wins the argument — it shows a flaw in reasoning, but the claim might still be true via a different argument",
+      "Fallacies are always intentional manipulations — many fallacies are committed accidentally without awareness",
+      "Appeal to authority is always fallacious — citing a genuine expert in their field is legitimate; the fallacy is citing an authority outside their expertise",
+      "All slippery slope arguments are fallacious — some causal chains are empirically supported; the fallacy is asserting the chain without evidence"
+    ],
+    "edge_cases": [
+      "Genetic fallacy vs relevant context: dismissing an argument because of its origin is sometimes relevant (e.g., research funded by tobacco companies)",
+      "Burden of proof shifts: in law, the burden is on the prosecution; in science, on the person proposing an extraordinary claim",
+      "Informal fallacies can be persuasive even when invalid — emotional appeals are not automatically fallacious if they're also logically sound",
+      "Compound fallacies: multiple fallacies can appear in a single argument, making it harder to dissect"
+    ],
+    "real_world_examples": [
+      "Political debates: straw man and false dichotomy are among the most frequently deployed fallacies in political rhetoric",
+      "Social media: ad hominem and appeal to authority (citing celebrities for medical claims) are endemic",
+      "Legal cross-examination: trained attorneys exploit hasty generalization and post hoc to challenge witnesses",
+      "Advertising: 'Doctors prefer Brand X' — often an appeal to authority or a misleadingly sampled statistic"
+    ],
+    "analogies": [
+      "A logical fallacy is like a crack in a bridge — the bridge might still stand, but you wouldn't trust it to hold weight. A conclusion reached via fallacious reasoning might be correct by luck, but the reasoning can't be trusted",
+      "Spotting fallacies is like reading code — bugs don't always crash the program, but they make it unreliable"
+    ],
+    "metadata": {
+      "difficulty_level": "beginner",
+      "tags": ["logical fallacies", "critical thinking", "reasoning", "debate", "ad hominem", "straw man", "argumentation"],
+      "prerequisites": ["Basic reading and comprehension — no formal logic background required"]
+    },
+    "input_type": "text",
+    "output_type": "text",
+    "safety_notes": "",
+    "allowed_scope": "Can identify, explain, and give examples of logical fallacies. Can analyze arguments and identify potential fallacies. Does not adjudicate the truth of political or religious claims.",
+    "summary": "Logical fallacies are errors in reasoning that weaken or invalidate an argument. Key informal fallacies include ad hominem, straw man, false dichotomy, and post hoc reasoning. Identifying them improves both your own argumentation and your ability to evaluate others' claims.",
+    "related_topics": ["Formal logic", "Deductive vs inductive reasoning", "Cognitive biases", "Critical thinking", "Debate skills", "Socratic method"],
+    "response_style": "explanation"
+  }
+]
