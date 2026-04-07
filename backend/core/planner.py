@@ -1,46 +1,58 @@
 import json
 import google.generativeai as genai
+import os
 
-text_model = genai.GenerativeModel('gemini-2.5-flash-lite')
+model = None
 
-def plan_task(processed_input, chat_history) -> dict:
+def get_model():
+    global model
+    if model is None:
+        model = genai.GenerativeModel('gemini-2.5-flash-lite')
+    return model
+
+def plan_task(processed_input, chat_history_text):
     """
-    A fast intent classification and planning step.
-    Determines if RAG or vision processing is actually required based on query.
+    Classify user intent and decide what pipeline components to activate.
     """
     query = processed_input.get("user_query", "")
-    has_screen = bool(processed_input.get("screen_summary", ""))
-    
-    # Simple heuristic routing for low latency if query is very short or specific.
-    # We will use an LLM call to classify intent strictly.
-    prompt = f"""
-Given the user query, determine the intent and requirements for the task.
-Output ONLY a raw JSON object with no markdown formatting or backticks.
-Schema:
-{{
-    "intent": "qa" | "summarize" | "debug" | "action" | "explain",
-    "requires_rag": true/false,
-    "requires_vision": true/false
-}}
+    if not query:
+        return {
+            "intent": "qa",
+            "requires_rag": False,
+            "requires_vision": bool(processed_input.get("screen_summary") or processed_input.get("screen_text")),
+            "response_type": "text"
+        }
 
-User Query: {query}
-Has Screen Context Provided: {str(has_screen).lower()}
-"""
+    prompt = f"""
+    Analyze the user's query and recent chat history to determine the intent and required tools.
+    
+    Query: "{query}"
+    
+    Output JSON with the following boolean and string fields:
+    - intent: one of ["qa", "summarize", "debug", "action", "explain"]
+    - requires_rag: True if the query asks about general knowledge, facts, concepts, or system documentation.
+    - requires_vision: True if the query asks about something on the screen, an image, code currently visible, or UI elements.
+    - response_type: "text", "structured", or "suggestion"
+    
+    Return ONLY raw JSON, no markdown blocks.
+    """
+    
     try:
-        response = text_model.generate_content(prompt)
+        response = get_model().generate_content(prompt)
         text = response.text.replace("```json", "").replace("```", "").strip()
         plan = json.loads(text)
         
-        # Override vision requirement if no screen context is even possible
-        if not has_screen:
-            plan["requires_vision"] = False
+        # Ensure fallback defaults
+        if "requires_vision" not in plan:
+            plan["requires_vision"] = bool(processed_input.get("screen_summary"))
             
         return plan
     except Exception as e:
-        print(f"Planner failed or failed to parse JSON: {e}")
-        # Default safe fallback
+        print(f"Planner error: {e}")
+        # Safe fallback
         return {
             "intent": "qa",
             "requires_rag": True,
-            "requires_vision": has_screen
+            "requires_vision": True,
+            "response_type": "text"
         }

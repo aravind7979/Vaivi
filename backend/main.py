@@ -141,52 +141,40 @@ async def delete_chat(chat_id: int, db: Session = Depends(get_db), current_user:
     db.commit()
     return {"status": "deleted"}
 
-# --- AI Endpoints ---
+# --- AI Endpoints (Refactored to Copilot Orchestrator) ---
+from core.orchestrator import route_and_answer
+
 @app.post("/api/ask")
 async def ask_assistant(request: AskRequest, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
-    
     if not GEMINI_API_KEY:
         raise HTTPException(status_code=500, detail="Gemini API Key missing")
 
-    prompt = "You are Vaivi, a helpful AI assistant.\nIMPORTANT: Math formulas MUST strictly be output as human-readable plain text, not LaTeX (e.g., '(-b ± √(b² - 4ac)) / (2a)')."
-
-    if request.context:
-        prompt += f" Context: {request.context}"
-
     chat = None
-
     if request.chat_id:
         chat = db.query(models.Chat)\
             .filter(models.Chat.id == request.chat_id, models.Chat.user_id == current_user.id)\
             .first()
 
-        if chat:
-            db.add(models.Message(chat_id=chat.id, role="user", content=request.query))
-            db.commit()
-
-            recent_msgs = db.query(models.Message)\
-                .filter(models.Message.chat_id == chat.id)\
-                .order_by(models.Message.created_at.asc())\
-                .limit(10)\
-                .all()
-
-            for msg in recent_msgs:
-                if msg.role == 'user':
-                    prompt += f"\nUser: {msg.content}"
-                else:
-                    prompt += f"\nVaivi: {msg.content}"
-
-    prompt += f"\nUser: {request.query}"
+    recent_msgs = []
+    if chat:
+        db.add(models.Message(chat_id=chat.id, role="user", content=request.query))
+        db.commit()
+        recent_msgs = db.query(models.Message)\
+            .filter(models.Message.chat_id == chat.id)\
+            .order_by(models.Message.created_at.asc())\
+            .limit(10)\
+            .all()
 
     try:
-        response = text_model.generate_content(prompt)
-        ai_text = response.text
+        # Pass to the Orchestrator
+        result = route_and_answer(request.query, screenshot_base64=None, db_messages=recent_msgs)
+        ai_text = result["response"]
 
         if chat:
             db.add(models.Message(chat_id=chat.id, role="ai", content=ai_text))
             db.commit()
 
-        return {"response": ai_text}
+        return {"response": ai_text, "debug_metrics": result.get("debug_metrics")}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -199,45 +187,43 @@ async def chat_with_media(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.get_current_user)
 ):
-    
     if not GEMINI_API_KEY:
         raise HTTPException(status_code=500, detail="Gemini API Key missing")
 
     try:
         chat = None
-
         if chat_id:
             chat = db.query(models.Chat)\
                 .filter(models.Chat.id == chat_id, models.Chat.user_id == current_user.id)\
                 .first()
 
             if chat and query:
-                db.add(models.Message(chat_id=chat.id, role="user", content=f"[Screen] {query}"))
+                db.add(models.Message(chat_id=chat.id, role="user", content=f"[Screen Context] {query}"))
                 db.commit()
 
-        # Read all files
-        pil_images = []
-        for file in files:
-            image_bytes = await file.read()
-            pil_images.append(Image.open(io.BytesIO(image_bytes)))
+        recent_msgs = []
+        if chat:
+            recent_msgs = db.query(models.Message)\
+                .filter(models.Message.chat_id == chat.id)\
+                .order_by(models.Message.created_at.asc())\
+                .limit(10)\
+                .all()
 
-        system_prompt = (
-            "You are Vaivi, an AI assistant capable of analyzing images and screens.\n"
-            "IMPORTANT: Math formulas MUST strictly be output as human-readable plain text, not LaTeX (e.g., '(-b ± √(b² - 4ac)) / (2a)')."
-        )
+        # Extract strictly first file as base64 string
+        screenshot_base64 = None
+        if files:
+            image_bytes = await files[0].read()
+            import base64
+            screenshot_base64 = base64.b64encode(image_bytes).decode('utf-8')
 
-        if query:
-            system_prompt += f"\nUser Query: {query}"
-
-        # Pass prompt and all images
-        response = vision_model.generate_content([system_prompt] + pil_images)
-        ai_text = response.text
+        result = route_and_answer(query or "Analyze this screen", screenshot_base64=screenshot_base64, db_messages=recent_msgs)
+        ai_text = result["response"]
 
         if chat:
             db.add(models.Message(chat_id=chat.id, role="ai", content=ai_text))
             db.commit()
 
-        return {"response": ai_text}
+        return {"response": ai_text, "debug_metrics": result.get("debug_metrics")}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

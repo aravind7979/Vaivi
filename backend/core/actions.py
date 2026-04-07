@@ -1,11 +1,17 @@
-def get_suggested_actions(plan_intent: str, query: str) -> list:
+def suggest_actions(plan, response_text):
     """
-    Returns a dummy scaffold of possible actions based on intent.
-    In the future, this layer will hook into system automation or UI controls.
+    Parses the response or plan to scaffold UI actions.
+    Future-ready for actual automations.
     """
-    if plan_intent == "debug":
-        return ["Check system logs", "View latest errors"]
-    elif plan_intent == "action":
-        return ["Perform suggested UI click", "Execute macro"]
+    actions = []
     
-    return []
+    if plan.get("intent") == "debug":
+        actions.append("Search documentation for this error")
+        
+    if plan.get("intent") == "action":
+        actions.append("Execute suggested fix")
+
+    return {
+        "type": "suggestion",
+        "actions": actions
+    }

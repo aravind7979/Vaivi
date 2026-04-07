@@ -1,42 +1,26 @@
-from .rag_retriever import retrieve
-
-def build_context(query: str, screen_data: dict, memory_messages: list, requires_rag: bool = True) -> dict:
+def build_context(query, processed_input, chat_history_text, rag_results):
     """
-    Fuses multiple sources of context: memory, screen perception, and RAG knowledge base.
+    Combines all context sources into a structured string for the LLM.
     """
-    rag_context_text = ""
-    sources = []
+    context_blocks = []
 
-    # 1. Fetch RAG context conditionally
-    if requires_rag and query:
-        retrieved_chunks = retrieve(query, top_k=3)
-        if retrieved_chunks:
-            lines = []
-            for idx, chunk in enumerate(retrieved_chunks):
-                domain = chunk["metadata"].get("domain", "General")
-                lines.append(f"Source [{idx+1}] ({domain}): {chunk['text']}")
-                sources.append(chunk["metadata"])
-            rag_context_text = "\n\n".join(lines)
+    if rag_results:
+        rag_text = "--- KNOWLEDGE BASE CONTEXT ---\n"
+        for i, res in enumerate(rag_results):
+            rag_text += f"Fact {i+1} (Source: {res['source']}): {res['text']}\n"
+        context_blocks.append(rag_text)
 
-    # 2. Extract Screen Context
-    screen_context_text = ""
-    if screen_data:
-        summary = screen_data.get("screen_summary", "")
-        screen_text = screen_data.get("screen_text", "")
-        if summary or screen_text:
-            screen_context_text = f"Screen Summary: {summary}\nScreen Text: {screen_text}"
+    if processed_input.get("screen_text") or processed_input.get("screen_summary"):
+        screen_text = "--- SCREEN CONTEXT ---\n"
+        if processed_input.get("screen_summary"):
+            screen_text += f"Screen Insight: {processed_input['screen_summary']}\n"
+        if processed_input.get("screen_text"):
+            screen_text += f"Visible Text: {processed_input['screen_text']}\n"
+        context_blocks.append(screen_text)
 
-    # 3. Format Conversation Memory Context
-    memory_context_text = ""
-    if memory_messages:
-        lines = []
-        for msg in memory_messages:
-            lines.append(f"{msg['role'].capitalize()}: {msg['content']}")
-        memory_context_text = "\n".join(lines)
+    if chat_history_text:
+        context_blocks.append(f"--- RECENT CHAT HISTORY ---\n{chat_history_text}")
 
-    return {
-        "rag_context": rag_context_text,
-        "screen_context": screen_context_text,
-        "memory_context": memory_context_text,
-        "sources": sources
-    }
+    context_blocks.append(f"--- USER QUERY ---\n{query}")
+
+    return "\n\n".join(context_blocks)

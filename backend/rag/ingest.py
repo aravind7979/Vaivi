@@ -1,96 +1,87 @@
 import os
 import json
-import glob
-import google.generativeai as genai
-from dotenv import load_dotenv
-
-load_dotenv()
-
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
+import faiss
+import numpy as np
+from sentence_transformers import SentenceTransformer
 
 KNOWLEDGE_DIR = os.path.join(os.path.dirname(__file__), "..", "knowledge")
-DB_PATH = os.path.join(os.path.dirname(__file__), "embeddings.json")
+INDEX_FILE = os.path.join(os.path.dirname(__file__), "index.faiss")
+METADATA_FILE = os.path.join(os.path.dirname(__file__), "metadata.json")
+MODEL_NAME = 'all-MiniLM-L6-v2'
 
-def ingest_knowledge():
-    """Reads all JSON files in the knowledge directory, generates embeddings, and saves to a local JSON DB."""
-    if not GEMINI_API_KEY:
-        print("Error: GEMINI_API_KEY is not set. Cannot run ingestion.")
+def chunk_text(text, chunk_size=300, overlap=50):
+    words = text.split()
+    chunks = []
+    for i in range(0, len(words), chunk_size - overlap):
+        chunk = " ".join(words[i:i + chunk_size])
+        if chunk:
+            chunks.append(chunk)
+    return chunks
+
+def ingest():
+    print("Loading embedding model...")
+    model = SentenceTransformer(MODEL_NAME)
+    
+    docs = []
+    metadata = []
+    
+    print(f"Reading from {KNOWLEDGE_DIR}...")
+    if not os.path.exists(KNOWLEDGE_DIR):
+        os.makedirs(KNOWLEDGE_DIR)
+        
+    for filename in os.listdir(KNOWLEDGE_DIR):
+        if filename.endswith(".json"):
+            filepath = os.path.join(KNOWLEDGE_DIR, filename)
+            with open(filepath, 'r', encoding='utf-8') as f:
+                try:
+                    data = json.load(f)
+                    # Support different JSON structures
+                    text_content = ""
+                    if isinstance(data, dict):
+                        # Flatten dict to string or extract a specific field like "content"
+                        for k, v in data.items():
+                            if isinstance(v, str):
+                                text_content += f"{k}: {v}\n"
+                            elif isinstance(v, list):
+                                text_content += f"{k}:\n" + "\n".join(str(item) for item in v) + "\n"
+                    elif isinstance(data, list):
+                        for item in data:
+                            text_content += json.dumps(item) + "\n"
+                    else:
+                        text_content = str(data)
+                        
+                    chunks = chunk_text(text_content)
+                    
+                    for i, chunk in enumerate(chunks):
+                        docs.append(chunk)
+                        metadata.append({
+                            "source": filename,
+                            "chunk_index": i,
+                            "text": chunk
+                        })
+                        
+                except Exception as e:
+                    print(f"Error parsing {filename}: {e}")
+
+    if not docs:
+        print("No documents found to ingest.")
         return
 
-    documents = []
+    print(f"Computing embeddings for {len(docs)} chunks...")
+    embeddings = model.encode(docs, show_progress_bar=True, convert_to_numpy=True)
     
-    # Load all json files
-    for filepath in glob.glob(os.path.join(KNOWLEDGE_DIR, "*.json")):
-        try:
-            with open(filepath, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                if isinstance(data, list):
-                    for item in data:
-                        documents.append(item)
-                else:
-                    documents.append(data)
-        except Exception as e:
-            print(f"Error reading {filepath}: {e}")
-
-    print(f"Loaded {len(documents)} knowledge items.")
-
-    # Load existing embeddings to avoid re-embedding
-    db = {}
-    if os.path.exists(DB_PATH):
-        try:
-            with open(DB_PATH, 'r', encoding='utf-8') as f:
-                db = json.load(f)
-        except Exception:
-            db = {}
-
-    updated = False
-    for doc in documents:
-        doc_id = doc.get("document_id")
-        if not doc_id:
-            continue
-            
-        if doc_id in db:
-            continue # already embedded
+    dimension = embeddings.shape[1]
+    index = faiss.IndexFlatL2(dimension)
+    
+    print("Building FAISS index...")
+    index.add(embeddings)
+    
+    faiss.write_index(index, INDEX_FILE)
+    
+    with open(METADATA_FILE, 'w', encoding='utf-8') as f:
+        json.dump(metadata, f)
         
-        # Build a text block for embedding
-        title = doc.get("title", "")
-        summary = doc.get("summary", "")
-        content = doc.get("content", "")
-        domain = doc.get("domain", "")
-        
-        text_to_embed = f"Title: {title}\nDomain: {domain}\nSummary: {summary}\nContent: {content}"
-        
-        print(f"Generating embedding for {doc_id}...")
-        try:
-            result = genai.embed_content(
-                model="models/text-embedding-004",
-                content=text_to_embed,
-                task_type="retrieval_document"
-            )
-            embedding = result['embedding']
-            
-            db[doc_id] = {
-                "text": text_to_embed,
-                "metadata": {
-                    "title": title,
-                    "domain": domain,
-                    "document_id": doc_id,
-                    "source": "knowledge_file"
-                },
-                "embedding": embedding
-            }
-            updated = True
-        except Exception as e:
-            print(f"Failed to embed {doc_id}: {e}")
-
-    if updated:
-        with open(DB_PATH, 'w', encoding='utf-8') as f:
-            json.dump(db, f)
-        print(f"Successfully saved {len(db)} embedded chunks to {DB_PATH}.")
-    else:
-        print("No new documents to embed. Cache is up to date.")
+    print(f"Successfully ingested and cached to {INDEX_FILE}")
 
 if __name__ == "__main__":
-    ingest_knowledge()
+    ingest()

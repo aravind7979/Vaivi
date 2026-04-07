@@ -19,6 +19,216 @@
             --border-color: rgba(255, 255, 255, 0.1);
         }
 
+        /* RESET & GENERAL ALIGNMENT FOR LANDING PAGE */
+        .landing-page * {
+          box-sizing: border-box;
+        }
+
+        .landing-page {
+          width: 100vw;
+          height: 100vh;
+          overflow-x: hidden;
+          overflow-y: auto;
+          background: #0D0D0D;
+          color: #eee;
+          display: none; /* hidden by default */
+        }
+
+        /* HERO */
+        .landing-page .hero {
+          position: relative;
+          width: 100vw;
+          height: 100vh;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          background: black; 
+        }
+
+        .landing-page .bg-video {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          z-index: 0;
+        }
+
+        .landing-page .overlay {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          background: rgba(0,0,0,0.6);
+          z-index: 1;
+        }
+
+        .landing-page .hero-content {
+          position: relative;
+          z-index: 2;
+          color: white;
+          max-width: 700px;
+          padding: 20px;
+          opacity: 0;
+          transform: translateY(40px);
+          animation: fadeUp 1s ease forwards;
+        }
+
+        .landing-page .hero-content h1 {
+          font-size: 4rem;
+          letter-spacing: -2px;
+          margin-bottom: 20px;
+        }
+
+        .landing-page .hero-content p {
+          font-size: 1.3rem;
+          margin-bottom: 30px;
+          color: #bbb;
+        }
+
+        .landing-page .btn {
+          background: white;
+          color: black;
+          padding: 14px 28px;
+          border-radius: 6px;
+          text-decoration: none;
+          display: inline-block;
+          transition: all 0.3s ease;
+          border: none;
+          cursor: pointer;
+          font-size: 16px;
+          font-weight: 600;
+        }
+
+        .landing-page .btn:hover {
+          transform: translateY(-3px);
+          background: #ddd;
+        }
+
+        @keyframes fadeUp {
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .landing-page section {
+          padding: 100px 0;
+          text-align: center;
+        }
+
+        .landing-page .container {
+          max-width: 1100px;
+          margin: auto;
+          padding: 0 20px;
+        }
+
+        .landing-page h2 {
+          font-size: 2.2em;
+          margin-bottom: 20px;
+          color: #fff;
+        }
+        .landing-page p { color: #aaa; line-height: 1.7; }
+
+        .landing-page .reveal {
+          opacity: 0;
+          transform: translateY(50px);
+          transition: all 0.8s ease;
+        }
+        .landing-page .reveal.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .landing-page .gallery-container {
+          width: 100vw;
+          overflow-x: auto;
+          display: flex;
+          gap: 20px;
+          padding: 20px;
+          scroll-snap-type: x mandatory;
+          -ms-overflow-style: none;  /* IE and Edge */
+          scrollbar-width: none;  /* Firefox */
+        }
+        .landing-page .gallery-container::-webkit-scrollbar { display: none; }
+
+        .landing-page .gallery-item {
+          flex: 0 0 70%;
+          height: 400px;
+          scroll-snap-align: center;
+          transition: transform 0.4s ease;
+        }
+        .landing-page .gallery-item:hover { transform: scale(1.05); }
+        .landing-page .gallery-item img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 12px;
+        }
+
+        .landing-page .features {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 30px;
+        }
+
+        .landing-page .feature {
+          padding: 30px;
+          border-radius: 12px;
+          background: #151515;
+          border: 1px solid #222;
+          transition: transform 0.3s ease;
+        }
+        .landing-page .feature:hover {
+          transform: translateY(-8px);
+          background: #1a1a1a;
+        }
+
+        .landing-page .split {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 60px;
+          align-items: center;
+        }
+        .landing-page .split img { width: 100%; border-radius: 12px; }
+
+        .landing-page .steps {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 30px;
+        }
+        .landing-page .step {
+          padding: 20px;
+          border-radius: 10px;
+          background: #151515;
+          border: 1px solid #222;
+          transition: transform 0.3s ease;
+        }
+        .landing-page .step:hover { transform: translateY(-6px); }
+
+        .landing-page video.demo {
+          width: 100%;
+          max-width: 900px;
+          border-radius: 10px;
+          margin-top: 30px;
+        }
+        
+        .landing-page footer {
+          padding: 40px;
+          text-align: center;
+          border-top: 1px solid #222;
+          color: #888;
+        }
+
+        @media (max-width: 900px) {
+          .landing-page .features { grid-template-columns: 1fr; }
+          .landing-page .split { grid-template-columns: 1fr; }
+          .landing-page .steps { grid-template-columns: 1fr 1fr; }
+          .landing-page .gallery-item { flex: 0 0 85%; }
+        }
+
         body {
             margin: 0;
             font-family: 'Inter', sans-serif;
@@ -143,6 +353,38 @@
             color: var(--text-muted);
             cursor: pointer;
         }
+
+        .chat-search-container {
+            display: none;
+            align-items: center;
+            background: var(--bg-hover);
+            border-radius: 8px;
+            padding: 4px 8px;
+            gap: 8px;
+        }
+        .chat-search-input {
+            background: transparent;
+            border: none;
+            color: var(--text);
+            outline: none;
+            width: 150px;
+            font-size: 13px;
+        }
+        .chat-search-nav {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            border-radius: 4px;
+        }
+        .chat-search-nav:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+        .match-count { font-size: 12px; color: var(--text-muted); min-width: 40px; text-align: center; }
+
+        .highlight-mark { background: rgba(255, 255, 0, 0.4); color: inherit; padding: 0 2px; border-radius: 2px; }
+        .highlight-mark.active-mark { background: rgba(255, 165, 0, 0.8); color: black; }
 
         .auth-container {
             display: flex;
@@ -440,6 +682,99 @@
 </head>
 <body>
 
+    <!-- MARKETING LANDING PAGE (Unauthenticated) -->
+    <div class="landing-page" id="marketingLanding">
+        <header class="hero">
+          <video autoplay muted loop playsinline class="bg-video">
+            <source src="hero.mp4" type="video/mp4">
+          </video>
+        
+          <div class="overlay"></div>
+        
+          <div class="hero-content">
+            <h1>VAIVI</h1>
+            <p>Overlaying intelligence on any workspace.</p>
+            <button onclick="handleAuthClick()" class="btn">Get Started</button>
+          </div>
+        </header>
+        
+        <section>
+          <div class="container">
+            <h2 class="reveal">Explore Vaivi</h2>
+          </div>
+        
+          <div class="gallery-container">
+            <div class="gallery-item reveal"><img src="image1.png"></div>
+            <div class="gallery-item reveal"><img src="image2.png"></div>
+            <div class="gallery-item reveal"><img src="image3.png"></div>
+            <div class="gallery-item reveal"><img src="image4.png"></div>
+          </div>
+        </section>
+        
+        <section>
+          <div class="container">
+            <h2 class="reveal">What Vaivi Does</h2>
+        
+            <div class="features">
+              <div class="feature reveal">
+                <h3>Global Shortcut</h3>
+                <p>Press Alt + V anywhere.</p>
+              </div>
+        
+              <div class="feature reveal">
+                <h3>Screen Understanding</h3>
+                <p>Analyze real-time screens.</p>
+              </div>
+        
+              <div class="feature reveal">
+                <h3>Voice Loop</h3>
+                <p>Talk continuously with AI.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <section>
+          <div class="container split">
+            <div class="reveal">
+              <h2>Vaivi sees your screen</h2>
+              <p>Understand code, UI, and context instantly.</p>
+            </div>
+        
+            <div class="reveal">
+              <img src="image1.png">
+            </div>
+          </div>
+        </section>
+        
+        <section>
+          <div class="container">
+            <h2 class="reveal">How it works</h2>
+        
+            <div class="steps">
+              <div class="step reveal"><h3>1. Summon</h3></div>
+              <div class="step reveal"><h3>2. Capture</h3></div>
+              <div class="step reveal"><h3>3. Understand</h3></div>
+              <div class="step reveal"><h3>4. Respond</h3></div>
+            </div>
+          </div>
+        </section>
+        
+        <section>
+          <div class="container">
+            <h2 class="reveal">Demo</h2>
+            <video controls class="demo reveal">
+              <source src="video1.mp4" type="video/mp4">
+            </video>
+          </div>
+        </section>
+        
+        <footer>
+          <p>© 2026 Vaivi AI</p>
+        </footer>
+    </div>
+    <!-- END MARKETING -->
+
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <button class="new-chat-btn" id="newChatBtn">
@@ -459,6 +794,17 @@
                 <button class="hamburger" id="hamburgerBtn" title="Toggle sidebar (Ctrl + Shift + S)">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 </button>
+                <div class="header-title" style="display:none" id="headerTitle"></div>
+                <button class="tool-btn" id="toggleChatSearchBtn" title="Search in chat (Ctrl + K)" style="display:none;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </button>
+                <div class="chat-search-container" id="chatSearchContainer">
+                    <input type="text" class="chat-search-input" id="chatSearchInput" placeholder="Search in chat...">
+                    <span class="match-count" id="matchCount">0/0</span>
+                    <button class="chat-search-nav" id="searchPrevBtn" title="Previous (Shift + Enter)">▲</button>
+                    <button class="chat-search-nav" id="searchNextBtn" title="Next (Enter)">▼</button>
+                    <button class="chat-search-nav" id="chatSearchCloseBtn" title="Close">×</button>
+                </div>
             </div>
             <div class="auth-container">
                 <button class="auth-btn" id="getStartedBtn" style="display:none;" onclick="handleAuthClick()">Log in</button>
@@ -597,6 +943,16 @@
         const searchInput = document.getElementById('searchChats');
         const inputAreaBox = document.getElementById('inputAreaBox');
         
+        // Chat Search DOM
+        const toggleChatSearchBtn = document.getElementById('toggleChatSearchBtn');
+        const chatSearchContainer = document.getElementById('chatSearchContainer');
+        const chatSearchInput = document.getElementById('chatSearchInput');
+        const matchCount = document.getElementById('matchCount');
+        
+        let searchMatches = [];
+        let currentMatchIndex = -1;
+        let originalChatHTMLMap = new Map(); // Store original HTML to restore after highlight
+        
         // Tools & Previews
         const fileInput = document.getElementById('fileInput');
         const filePreviews = document.getElementById('filePreviews');
@@ -605,10 +961,9 @@
         async function init() {
             if (!token) {
                 // UI for Unauthenticated
-                getStartedBtn.style.display = 'block';
-                inputAreaBox.style.display = 'none'; // hide chat input
-                sidebar.style.display = 'none'; // hide sidebar on destkop easily by style
-                document.querySelector('.hamburger').style.display = 'none';
+                document.querySelector('.main-content').style.display = 'none';
+                document.querySelector('.sidebar').style.display = 'none';
+                document.getElementById('marketingLanding').style.display = 'block';
                 return;
             }
 
@@ -735,13 +1090,27 @@
             emptyState.style.display = 'none';
             document.querySelectorAll('.chat-item').forEach(i => i.classList.remove('active'));
             await loadChats();
+            
+            // Show search bar icon when in a chat
+            document.getElementById('headerTitle').innerText = document.querySelector('.chat-item.active')?.innerText || "Chat";
+            document.getElementById('headerTitle').style.display = 'block';
+            if(chatSearchContainer.style.display === 'none') {
+                 document.getElementById('toggleChatSearchBtn').style.display = 'flex';
+            }
 
             const res = await fetch(`${API_BASE}/api/chats/${id}/messages`, { headers: { 'Authorization': `Bearer ${token}` } });
             const msgs = await res.json();
             messagesWrapper.innerHTML = '';
-            msgs.forEach(m => addMessageToUI(m.content, m.role));
+            originalChatHTMLMap.clear(); // reset DOM map
+            
+            msgs.forEach(m => addMessageToUI(m.content, m.role, 'msg-' + m.id));
             scrollToBottom();
             if(window.innerWidth <= 768) sidebar.classList.remove('open');
+            
+            // Restore search if container open
+            if(chatSearchContainer.style.display !== 'none' && chatSearchInput.value.length >= 2) {
+                performChatSearch(chatSearchInput.value);
+            }
         }
 
         // --- File Uploads & Previews ---
@@ -820,15 +1189,23 @@
                 }
                 chatInput.value = finalDictationText + interim;
                 
-                // Voice Activity Detection (VAD) for Live Mode
+                // Voice Activity Detection (VAD) & Barge-in for Live Mode
                 if (isLiveMode && (finalDictationText || interim)) {
+                    // BARGE-IN: If the user actively speaks, physically interrupt the AI TTS immediately
+                    if (isSpeakingTTS && (interim.trim().length > 3 || finalDictationText.trim().length > 0)) {
+                        window.speechSynthesis.cancel();
+                        isSpeakingTTS = false;
+                        document.getElementById('typingIndicator').style.display = "none";
+                        document.getElementById('sendBtn').disabled = false;
+                    }
+
                     clearTimeout(liveSilenceTimer);
                     liveSilenceTimer = setTimeout(() => {
-                        if(chatInput.value.trim().length > 1) {
+                        if(chatInput.value.trim().length > 2) {
                             recognizer.stop(); // This triggers onend, handling logic 
                             handleSend();
                         }
-                    }, 2500); // 2.5 second silence threshold
+                    }, 2000); // Wait for 2 seconds of silence
                 }
             };
 
@@ -907,12 +1284,10 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        // --- Messaging ---
-        chatInput.addEventListener('input', function() { this.style.height = '24px'; this.style.height = (this.scrollHeight) + 'px'; });
-
-        function addMessageToUI(text, role) {
+        function addMessageToUI(text, role, msgId = null) {
             const row = document.createElement('div');
             row.className = `msg-row ${role}`;
+            row.id = msgId || 'msg-' + Math.random().toString(36).substring(7);
             
             let formattedText = text
                 .replace(/```(?:html|css|js|javascript|python)?\n([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
@@ -920,10 +1295,120 @@
                 .replace(/\*\*([^\*]+)\*\*/g, '<strong>$1</strong>')
                 .replace(/\n/g, '<br>');
 
-            row.innerHTML = `<div class="msg">${formattedText}</div>`; // Removed Avatar entirely for super clean look
+            row.innerHTML = `<div class="msg" id="content-${row.id}">${formattedText}</div>`;
             messagesWrapper.appendChild(row);
+            originalChatHTMLMap.set(row.id, formattedText);
             scrollToBottom();
+            
+            // Re-apply search if active
+            if(chatSearchContainer.style.display === 'flex' && chatSearchInput.value.trim().length >= 2) {
+                performChatSearch(chatSearchInput.value);
+            }
         }
+
+        // --- Chat Keyword Searching & Highlighting ---
+        function performChatSearch(keyword) {
+            clearChatSearch();
+            if(!keyword || keyword.trim().length < 2) return;
+            
+            const term = keyword.trim().toLowerCase();
+            const allMsgRows = document.querySelectorAll('.msg-row');
+            
+            allMsgRows.forEach(row => {
+                const contentDiv = row.querySelector('.msg');
+                const originalHTML = originalChatHTMLMap.get(row.id);
+                if(!originalHTML) return;
+                
+                // Temporary container to parse text safely
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = originalHTML;
+                
+                // Use a proper Walker to avoid destroying html tags
+                let localMatches = [];
+                const walker = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT, null, false);
+                let node;
+                
+                while (node = walker.nextNode()) {
+                    const text = node.nodeValue;
+                    const idx = text.toLowerCase().indexOf(term);
+                    if (idx !== -1) {
+                        localMatches.push({node, idx});
+                    }
+                }
+                
+                // Reverse iterate to safely split text nodes without messing up previous offsets
+                localMatches.reverse().forEach(match => {
+                    const node = match.node;
+                    const splitPnode = node.splitText(match.idx);
+                    splitPnode.splitText(term.length);
+                    const mark = document.createElement('mark');
+                    mark.className = 'highlight-mark';
+                    mark.textContent = splitPnode.nodeValue;
+                    splitPnode.parentNode.replaceChild(mark, splitPnode);
+                });
+                
+                contentDiv.innerHTML = tempDiv.innerHTML;
+            });
+            
+            searchMatches = Array.from(document.querySelectorAll('.highlight-mark'));
+            if(searchMatches.length > 0) {
+                currentMatchIndex = searchMatches.length - 1; // Start from most recent (bottom)
+                focusMatchIndex(currentMatchIndex);
+            } else {
+                matchCount.innerText = "0/0";
+            }
+        }
+        
+        function clearChatSearch() {
+            document.querySelectorAll('.msg-row').forEach(row => {
+                const contentDiv = row.querySelector('.msg');
+                if(originalChatHTMLMap.has(row.id)) contentDiv.innerHTML = originalChatHTMLMap.get(row.id);
+            });
+            searchMatches = [];
+            currentMatchIndex = -1;
+            matchCount.innerText = "0/0";
+        }
+        
+        function focusMatchIndex(index) {
+            if(searchMatches.length === 0) return;
+            searchMatches.forEach(m => m.classList.remove('active-mark'));
+            
+            if(index < 0) index = searchMatches.length - 1;
+            if(index >= searchMatches.length) index = 0;
+            currentMatchIndex = index;
+            
+            const mark = searchMatches[currentMatchIndex];
+            mark.classList.add('active-mark');
+            mark.scrollIntoView({ behavior: "smooth", block: "center" });
+            
+            matchCount.innerText = `${currentMatchIndex + 1}/${searchMatches.length}`;
+        }
+
+        // Chat Search UI bindings
+        toggleChatSearchBtn.addEventListener('click', () => {
+            chatSearchContainer.style.display = 'flex';
+            toggleChatSearchBtn.style.display = 'none';
+            chatSearchInput.focus();
+        });
+        
+        document.getElementById('chatSearchCloseBtn').addEventListener('click', () => {
+            chatSearchContainer.style.display = 'none';
+            toggleChatSearchBtn.style.display = 'block';
+            chatSearchInput.value = '';
+            clearChatSearch();
+        });
+        
+        chatSearchInput.addEventListener('input', (e) => performChatSearch(e.target.value));
+        document.getElementById('searchNextBtn').addEventListener('click', () => focusMatchIndex(currentMatchIndex + 1));
+        document.getElementById('searchPrevBtn').addEventListener('click', () => focusMatchIndex(currentMatchIndex - 1));
+        
+        chatSearchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (e.shiftKey) focusMatchIndex(currentMatchIndex - 1);
+                else focusMatchIndex(currentMatchIndex + 1);
+            }
+        });
 
         function scrollToBottom() { const ca = document.getElementById('chatArea'); ca.scrollTop = ca.scrollHeight; }
 
@@ -1030,8 +1515,17 @@
             // Unauth safety
             if(!token) return;
 
-            // Ctrl + K : Search chats
-            if (e.ctrlKey && e.key.toLowerCase() === 'k') { e.preventDefault(); searchInput.focus(); }
+            // Ctrl + K : Search chats or Chat Search
+            if (e.ctrlKey && e.key.toLowerCase() === 'k') { 
+                e.preventDefault(); 
+                if(currentChatId) {
+                    // Chat is active, open in-chat search
+                    document.getElementById('toggleChatSearchBtn').click();
+                } else {
+                    // No chat active, focus sidebar search
+                    searchInput.focus(); 
+                }
+            }
             // Ctrl + Shift + O : Open new chat
             if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'o') { e.preventDefault(); document.getElementById('newChatBtn').click(); }
             // Ctrl + Shift + S : Toggle sidebar
@@ -1058,6 +1552,17 @@
         });
 
         init();
+
+        // Marketing logic bindings
+        const observer = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+            }
+          });
+        });
+        document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+
     </script>
 </body>
 </html>

@@ -1,59 +1,60 @@
 import os
 import json
-import math
-import google.generativeai as genai
+import faiss
+import numpy as np
+from sentence_transformers import SentenceTransformer
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "embeddings.json")
+INDEX_FILE = os.path.join(os.path.dirname(__file__), "index.faiss")
+METADATA_FILE = os.path.join(os.path.dirname(__file__), "metadata.json")
+MODEL_NAME = 'all-MiniLM-L6-v2'
 
-def cosine_similarity(v1, v2):
-    dot_product = sum(a * b for a, b in zip(v1, v2))
-    magnitude1 = math.sqrt(sum(a * a for a in v1))
-    magnitude2 = math.sqrt(sum(b * b for b in v2))
-    if magnitude1 == 0 or magnitude2 == 0:
-        return 0
-    return dot_product / (magnitude1 * magnitude2)
+class RAGRetriever:
+    def __init__(self):
+        self.model = None
+        self.index = None
+        self.metadata = []
+        self._load_index()
 
-def retrieve(query, top_k=3, threshold=0.6):
-    """Retrieves top-k most relevant chunks from the embedding cache for a given query."""
-    if not os.path.exists(DB_PATH):
-        return []
+    def _load_index(self):
+        if not os.path.exists(INDEX_FILE) or not os.path.exists(METADATA_FILE):
+            print("Warning: FAISS index or metadata not found. RAG will return empty results.")
+            return
+
+        print("Loading embedding model for retrieval...")
+        self.model = SentenceTransformer(MODEL_NAME)
         
-    try:
-        with open(DB_PATH, 'r', encoding='utf-8') as f:
-            db = json.load(f)
-    except Exception:
-        return []
+        print("Loading FAISS index...")
+        self.index = faiss.read_index(INDEX_FILE)
         
-    if not db:
-        return []
+        with open(METADATA_FILE, 'r', encoding='utf-8') as f:
+            self.metadata = json.load(f)
 
-    # Embed the user query
-    try:
-        result = genai.embed_content(
-            model="models/text-embedding-004",
-            content=query,
-            task_type="retrieval_query"
-        )
-        query_embedding = result['embedding']
-    except Exception as e:
-        print(f"RAG Retrieval Error (Embedding query failed): {e}")
-        return []
+    def retrieve(self, query, top_k=3, threshold=1.5):
+        """
+        Retrieves relevant chunks for a query.
+        L2 distance is used. Lower distance means higher similarity.
+        Threshold filters out bad matches.
+        """
+        if self.index is None or not self.metadata:
+            return []
 
-    # Score against all chunks
-    results = []
-    for doc_id, data in db.items():
-        doc_embedding = data.get("embedding", [])
-        if not doc_embedding:
-            continue
-            
-        score = cosine_similarity(query_embedding, doc_embedding)
-        if score >= threshold:
-            results.append({
-                "score": score,
-                "text": data.get("text", ""),
-                "metadata": data.get("metadata", {})
-            })
-            
-    # Sort by score descending
-    results.sort(key=lambda x: x["score"], reverse=True)
-    return results[:top_k]
+        query_embedding = self.model.encode([query], convert_to_numpy=True)
+        distances, indices = self.index.search(query_embedding, top_k)
+        
+        results = []
+        for dist, idx in zip(distances[0], indices[0]):
+            if idx != -1 and dist < threshold:
+                chunk_data = self.metadata[idx]
+                results.append({
+                    "text": chunk_data["text"],
+                    "source": chunk_data["source"],
+                    "distance": float(dist)
+                })
+                
+        return results
+
+# Singleton instance
+retriever = RAGRetriever()
+
+def get_retriever():
+    return retriever

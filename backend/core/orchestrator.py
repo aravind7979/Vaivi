@@ -1,85 +1,93 @@
+import time
 import google.generativeai as genai
-from .multimodal_processor import process_input
-from .planner import plan_task
-from .actions import get_suggested_actions
+from core.multimodal_processor import process_input
+from core.planner import plan_task
+from core.memory import build_chat_history
+from core.actions import suggest_actions
 from rag.context_builder import build_context
+from rag.rag_retriever import get_retriever
 
-text_model = genai.GenerativeModel('gemini-2.5-flash-lite')
+model = None
+vision_model = None
 
-def construct_prompt(plan: dict, context: dict, query: str) -> str:
-    """
-    Dynamically builds the final LLM prompt based on the plan and context.
-    Enforces format constraints specifically for math.
-    """
-    prompt_lines = [
-        "You are Vaivi, an intelligent, multimodal Copilot assistant.",
-        "Your goal is to be incredibly helpful, clear, and concise.",
-        "",
-        "CRITICAL INSTRUCTION FOR MATH FORMULAS:",
-        "Math formulas MUST NOT be output in LaTeX format (e.g., no \\frac or \\sqrt).",
-        "Instead, output math as plain human-readable text. For example: '(-b ± √(b² - 4ac)) / (2a)'.",
-        "This is a strict requirement to prevent UI crashes.",
-        ""
-    ]
-    
-    if plan.get("requires_rag") and context.get("rag_context"):
-        prompt_lines.append("=== KNOWLEDGE BASE CONTEXT ===")
-        prompt_lines.append(context["rag_context"])
-        prompt_lines.append("")
-        
-    if plan.get("requires_vision") and context.get("screen_context"):
-        prompt_lines.append("=== SCREEN PERCEPTION CONTEXT ===")
-        prompt_lines.append(context["screen_context"])
-        prompt_lines.append("")
-        
-    if context.get("memory_context"):
-        prompt_lines.append("=== RECENT CONVERSATION HISTORY ===")
-        prompt_lines.append(context["memory_context"])
-        prompt_lines.append("")
-        
-    prompt_lines.append("=== USER QUERY ===")
-    prompt_lines.append(query)
-    
-    return "\n".join(prompt_lines)
+def get_models():
+    global model, vision_model
+    if model is None:
+        model = genai.GenerativeModel('gemini-2.5-flash-lite')
+        vision_model = genai.GenerativeModel('gemini-2.5-flash-lite')
+    return model, vision_model
 
-def route_and_answer(query: str, pil_images: list, chat_history: list):
+def route_and_answer(user_query: str, screenshot_base64: str, db_messages: list):
     """
-    The main Copilot Orchestration Pipeline.
+    The main Orchestrator for the pipeline.
     """
-    # Step 1: Multimodal Processing
-    processed = process_input(pil_images, query)
+    times = {}
     
-    # Step 2: Intent & Task Planning
-    plan = plan_task(processed, chat_history)
+    # 1. Memory Processing
+    t0 = time.time()
+    chat_history_text = build_chat_history(db_messages)
+    times["memory"] = int((time.time() - t0) * 1000)
+
+    # 2. Multimodal Processing (Perception)
+    t0 = time.time()
+    processed = process_input(screenshot_base64, user_query)
+    times["perception"] = int((time.time() - t0) * 1000)
+
+    # 3. Planning
+    t0 = time.time()
+    plan = plan_task(processed, chat_history_text)
+    times["planning"] = int((time.time() - t0) * 1000)
+
+    # 4. RAG Retrieval (Conditional)
+    t0 = time.time()
+    rag_results = []
+    if plan.get("requires_rag") and user_query:
+        rag_results = get_retriever().retrieve(user_query, top_k=3)
+    times["retrieval"] = int((time.time() - t0) * 1000)
+
+    # 5. Context Building
+    t0 = time.time()
+    final_prompt = build_context(user_query, processed, chat_history_text, rag_results)
     
-    # Step 3: Context Building (Conditional RAG & memory fusion)
-    context = build_context(
-        query=query, 
-        screen_data=processed, 
-        memory_messages=chat_history, 
-        requires_rag=plan.get("requires_rag", True)
-    )
+    # Strictly ensure human-readable maths in system instructions
+    final_prompt = "INSTRUCTION: Provide math formulas in plain human-readable text (e.g. `(-b ± √(b² - 4ac)) / (2a)`) and NEVER in LaTeX.\n\n" + final_prompt
+    times["context_fusion"] = int((time.time() - t0) * 1000)
+
+    # 6. Final LLM Inference
+    t0 = time.time()
+    text_model, vis_model = get_models()
     
-    # Step 4: Prompt Construction
-    final_prompt = construct_prompt(plan, context, query)
-    
-    # Step 5: Execute Model
     try:
-        response = text_model.generate_content(final_prompt)
-        ai_response = response.text
+        if processed.get("screenshot_base64") and plan.get("requires_vision"):
+            # If we need the raw vision output directly beyond the processor's summary
+            import io
+            import base64
+            from PIL import Image
+            img_data = base64.b64decode(processed["screenshot_base64"])
+            img = Image.open(io.BytesIO(img_data))
+            response = vis_model.generate_content([final_prompt, img])
+        else:
+            response = text_model.generate_content(final_prompt)
+            
+        ai_response_text = response.text
     except Exception as e:
-        ai_response = f"I'm sorry, I encountered an error during response generation: {str(e)}"
+        ai_response_text = f"Error generating response: {e}"
         
-    # Step 6: Post-process actions
-    actions = get_suggested_actions(plan.get("intent", "qa"), query)
-    
-    return {
-        "response": ai_response,
-        "debug_info": {
-            "intent": plan.get("intent", "unknown"),
-            "rag_used": bool(context.get("rag_context")),
-            "vision_used": plan.get("requires_vision", False),
-            "sources": context.get("sources", []),
-            "suggested_actions": actions
+    times["llm"] = int((time.time() - t0) * 1000)
+
+    # 7. Post-processing Action scaffolding
+    actions = suggest_actions(plan, ai_response_text)
+
+    # 8. Formatting output structured for the client
+    structured_output = {
+        "response": ai_response_text,
+        "actions": actions,
+        "debug_metrics": {
+            "intent": plan.get("intent"),
+            "rag_used": plan.get("requires_rag"),
+            "vision_used": plan.get("requires_vision"),
+            "latency_ms": times
         }
     }
+
+    return structured_output
