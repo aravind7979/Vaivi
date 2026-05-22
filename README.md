@@ -6,7 +6,7 @@ A cross-platform AI system that understands your screen, processes voice and tex
 
 ## 🔗 Demo
 
-* **Live App**: https://your-vercel-link
+* **Live App**: https://vaivi.vercel.app
 * **Demo Video (90s)**: https://youtu.be/SGj-_pTr8qg
 * **GitHub**: https://github.com/aravind7979/Vaivi
 
@@ -22,7 +22,7 @@ Developers and users frequently switch context between tools (browser, IDE, docs
 
 Existing AI tools lack **real-time awareness of user context (screen, activity, voice)**.
 
-VAIVI solves this by enabling **on-demand, screen-aware AI interaction directly within the user’s workflow**.
+VAIVI solves this by enabling **on-demand, screen-aware AI interaction directly within the user's workflow**.
 
 ---
 
@@ -98,18 +98,18 @@ User Trigger (Alt+V)
 
 ## 🚀 Setup Instructions
 
+```bash
 git clone https://github.com/aravind7979/Vaivi
 cd Vaivi
 
 # Backend setup
-
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 
 # Run desktop app (Tauri)
-
 npm install
 npm run tauri dev
+```
 
 ---
 
@@ -137,7 +137,7 @@ npm run tauri dev
 
 ## 📌 Why This Project Matters
 
-VAIVI is not just a chatbot-it is a **real-time AI interaction system** that integrates:
+VAIVI is not just a chatbot—it is a **real-time AI interaction system** that integrates:
 
 * OS-level triggers
 * Screen-aware reasoning
