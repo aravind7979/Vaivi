@@ -1,0 +1,38 @@
+# ========================
+# VAIVI PROJECT .gitignore
+# ========================
+
+# Python
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/.env
+
+# Rust / Tauri
+desktop/src-tauri/target/
+desktop/node_modules/
+desktop/dist/
+
+# Android Build Artifacts
+desktop/src-tauri/gen/android/app/build/
+desktop/src-tauri/gen/android/build/
+desktop/src-tauri/gen/android/buildSrc/build/
+desktop/src-tauri/gen/android/.gradle/
+desktop/src-tauri/gen/android/buildSrc/.gradle/
+desktop/src-tauri/gen/android/buildSrc/.kotlin/
+desktop/src-tauri/gen/android/.idea/
+desktop/src-tauri/gen/android/local.properties
+
+# SQLite database (contains user data - never commit)
+backend/vaivi.db
+backend/vaivi_old.db
+
+# Secrets
+.env
+*.jks
+*.keystore
+
+# OS junk
+.DS_Store
+Thumbs.db
