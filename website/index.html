@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Vaivi AI</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -231,6 +231,9 @@
 
         body {
             margin: 0;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            box-sizing: border-box;
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-main);
             color: var(--text);
@@ -921,6 +924,11 @@
         let screenStream = null;
         let screenVideoObj = document.createElement('video');
         screenVideoObj.autoplay = true; screenVideoObj.playsInline = true;
+        
+        let latestNativeScreenFrameBase64 = null;
+        window.onReceiveScreenFrame = (base64Uri) => {
+            latestNativeScreenFrameBase64 = base64Uri;
+        };
 
         let selectedFiles = []; // For standard file uploads
         
@@ -1153,16 +1161,63 @@
             filePreviews.appendChild(el);
         }
 
-        // --- Screen Sharing ---
+        // --- Screen Sharing (Cross-Platform) ---
         document.getElementById("shareScreenBtn").addEventListener('click', async () => {
             if (isScreenShared) {
-                screenStream.getTracks().forEach(t => t.stop());
+                if(window.VaiviNative) window.VaiviNative.stopScreenCapture();
+                if(screenStream) screenStream.getTracks().forEach(t => t.stop());
                 isScreenShared = false;
+                latestNativeScreenFrameBase64 = null;
                 document.getElementById("shareScreenBtn").classList.remove('active-share');
                 clearPreviews();
                 return;
             }
+
             try {
+                // Intercept Android Native MediaProjection 
+                if (window.VaiviNative) {
+                    window.VaiviNative.startScreenCapture();
+                    document.getElementById("shareScreenBtn").classList.add('active-share');
+                    isScreenShared = true;
+                    // Provide a basic preview card
+                    const el = document.createElement('div');
+                    el.className = 'preview-item';
+                    el.style.display = 'block';
+                    el.innerHTML = `<div style="width:100%; height:100%; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:white; font-size:10px; text-align:center;">Screen Sync</div>
+                                    <button class="preview-remove" onclick="if(window.VaiviNative) window.VaiviNative.stopScreenCapture(); document.getElementById('shareScreenBtn').click();">×</button>`;
+                    filePreviews.appendChild(el);
+                    return;
+                }
+
+                // If Tauri exists and it's not a standard browser...
+                if (window.__TAURI__ && window.__TAURI__.core) {
+                    try {
+                        const res = await window.__TAURI__.core.invoke("capture_screen");
+                        // For Android base64 outputs OR Desktop Rust outputs
+                        const byteString = atob(res.base64 || res); 
+                        const ab = new ArrayBuffer(byteString.length);
+                        const ia = new Uint8Array(ab);
+                        for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+                        const blob = new Blob([ab], {type: 'image/png'});
+                        
+                        selectedFiles.push(new File([blob], "screen_capture.png", {type: "image/png"}));
+                        const el = document.createElement('div');
+                        el.className = 'preview-item';
+                        el.style.display = 'block';
+                        el.innerHTML = `<img src="${URL.createObjectURL(blob)}">
+                                        <button class="preview-remove" onclick="removeFile(${selectedFiles.length - 1}, this.parentElement)">×</button>`;
+                        filePreviews.appendChild(el);
+                        
+                        document.getElementById("shareScreenBtn").classList.add('active-share');
+                        isScreenShared = true;
+                        
+                        return; // Successfully used native intercept
+                    } catch (nativeErr) {
+                        console.warn("Native Screen Capture Failed/Not Implemented:", nativeErr);
+                    }
+                }
+
+                // Fallback to WebRTC (Desktop/Browser)
                 screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
                 screenVideoObj.srcObject = screenStream;
                 isScreenShared = true;
@@ -1412,6 +1467,7 @@
 
         function scrollToBottom() { const ca = document.getElementById('chatArea'); ca.scrollTop = ca.scrollHeight; }
 
+        let queryCounter = 0;
         async function handleSend() {
             const query = chatInput.value.trim();
             const validFiles = selectedFiles.filter(f => f !== null);
@@ -1442,11 +1498,18 @@
                     if (query) formData.append("query", query + " " + context);
                     formData.append("chat_id", currentChatId);
 
-                    // Append files
                     validFiles.forEach(f => formData.append("files", f));
 
-                    // Append screen share frame
-                    if(isScreenShared) {
+                    if(window.VaiviNative && latestNativeScreenFrameBase64) {
+                        // Native Android Base64 Data URI
+                        const arr = latestNativeScreenFrameBase64.split(',');
+                        const bstr = atob(arr[1]);
+                        const n = bstr.length;
+                        const u8arr = new Uint8Array(n);
+                        for(let i = 0; i < n; i++) u8arr[i] = bstr.charCodeAt(i);
+                        const blob = new Blob([u8arr], {type: "image/jpeg"});
+                        formData.append("files", blob, "native_screen.jpg");
+                    } else if(isScreenShared && screenStream) { // WebRTC specific
                         const captureCanvas = document.getElementById("captureCanvas");
                         const ctx = captureCanvas.getContext("2d");
                         captureCanvas.width = screenVideoObj.videoWidth;
@@ -1459,35 +1522,31 @@
                     const res = await fetch(`${API_BASE}/api/chat-with-media`, {
                         method: "POST", headers: { 'Authorization': `Bearer ${token}` }, body: formData
                     });
-                    if (!res.ok) {
-                        const errtext = await res.text();
-                        console.error("DEBUG ERR:", errtext);
-                        throw new Error(errtext);
-                    }
+                    if (!res.ok) throw new Error(await res.text());
                     const data = await res.json();
                     responseText = data.response;
                     
-                    if(!isScreenShared) clearPreviews(); // Remove file previews after send
+                    clearPreviews();
+                    if(isScreenShared) document.getElementById("shareScreenBtn").click(); // reset native lock
                 } else {
                     const res = await fetch(`${API_BASE}/api/ask`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
                         body: JSON.stringify({ query: query, chat_id: currentChatId, context: context })
                     });
-                    if (!res.ok) {
-                        const errtext = await res.text();
-                        console.error("DEBUG ERR:", errtext);
-                        throw new Error(errtext);
-                    }
+                    if (!res.ok) throw new Error(await res.text());
                     const data = await res.json();
                     responseText = data.response;
                 }
 
                 addMessageToUI(responseText, "ai");
                 
-                // Live TTS response
-                if(isLiveMode && responseText) {
-                    liveSpeak(responseText);
+                if(isLiveMode && responseText) liveSpeak(responseText);
+
+                // --- ADMOB POST-TASK TRIGGER ---
+                queryCounter++;
+                if (queryCounter % 3 === 0 && window.__TAURI__ && window.__TAURI__.core) {
+                    try { await window.__TAURI__.core.invoke("showAd"); } catch (e) { console.log("Ad skipped:", e); }
                 }
 
             } catch (err) {
@@ -1495,8 +1554,7 @@
                 let errmsg = err.message;
                 try { errmsg = JSON.parse(err.message).detail; } catch(e){}
                 addMessageToUI(`Oops! Error: ${errmsg}`, "ai");
-                
-                if(isLiveMode) { isLiveMode = false; document.getElementById('liveChatBtn').classList.remove('active-live'); } // Turn off live on error
+                if(isLiveMode) { isLiveMode = false; document.getElementById('liveChatBtn').classList.remove('active-live'); }
             } finally {
                 document.getElementById('typingIndicator').style.display = "none";
                 document.getElementById('sendBtn').disabled = false;
