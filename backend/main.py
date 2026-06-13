@@ -14,7 +14,7 @@ from database import engine, get_db
 import models
 import auth
 from core.orchestrator import route_and_answer
-from core.memory import get_recent_memory, save_message
+from core.memory import get_recent_memory, save_message, get_long_term_memories, extract_and_save_memory_local
 import time
 
 # Create DB tables
@@ -166,13 +166,19 @@ async def ask_assistant(request: AskRequest, db: Session = Depends(get_db), curr
             .all()
 
     try:
+        # Long-Term Memory
+        ltm = get_long_term_memories(db, current_user.id)
+        
         # Pass to the Orchestrator
-        result = route_and_answer(request.query, screenshot_base64=None, db_messages=recent_msgs)
+        result = route_and_answer(request.query, screenshot_base64=None, db_messages=recent_msgs, long_term_memories=ltm)
         ai_text = result["response"]
 
         if chat:
             db.add(models.Message(chat_id=chat.id, role="ai", content=ai_text))
             db.commit()
+
+        # Extract memory locally (Instant Regex)
+        extract_and_save_memory_local(db, current_user.id, request.query)
 
         return {"response": ai_text, "debug_metrics": result.get("debug_metrics")}
 
@@ -216,12 +222,19 @@ async def chat_with_media(
             import base64
             screenshot_base64 = base64.b64encode(image_bytes).decode('utf-8')
 
-        result = route_and_answer(query or "Analyze this screen", screenshot_base64=screenshot_base64, db_messages=recent_msgs)
+        # Long-Term Memory
+        ltm = get_long_term_memories(db, current_user.id)
+
+        result = route_and_answer(query or "Analyze this screen", screenshot_base64=screenshot_base64, db_messages=recent_msgs, long_term_memories=ltm)
         ai_text = result["response"]
 
         if chat:
             db.add(models.Message(chat_id=chat.id, role="ai", content=ai_text))
             db.commit()
+            
+        # Extract memory locally (Instant Regex)
+        if query:
+            extract_and_save_memory_local(db, current_user.id, query)
 
         return {"response": ai_text, "debug_metrics": result.get("debug_metrics")}
 
@@ -257,13 +270,19 @@ async def unified_copilot_query(
         db_msg = f"[Screen] {query}" if pil_images else query
         save_message(db, chat_id, current_user.id, "user", db_msg)
 
+    # Long-Term Memory
+    ltm = get_long_term_memories(db, current_user.id)
+
     # Route and Answer
-    result = route_and_answer(query, pil_images, chat_history)
+    result = route_and_answer(query, pil_images, chat_history, long_term_memories=ltm)
     ai_response = result["response"]
     
     # Save Assistant Response
     if chat_id:
         save_message(db, chat_id, current_user.id, "ai", ai_response)
+        
+    # Extract memory locally (Instant Regex)
+    extract_and_save_memory_local(db, current_user.id, query)
 
     elapsed_ms = int((time.time() - start_time) * 1000)
     result["debug_info"]["latency_ms"] = elapsed_ms

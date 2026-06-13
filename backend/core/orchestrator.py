@@ -17,7 +17,7 @@ def get_models():
         vision_model = genai.GenerativeModel('gemini-2.5-flash-lite')
     return model, vision_model
 
-def route_and_answer(user_query: str, screenshot_base64: str, db_messages: list):
+def route_and_answer(user_query: str, screenshot_base64: str, db_messages: list, long_term_memories: list = None):
     """
     The main Orchestrator for the pipeline.
     """
@@ -47,7 +47,7 @@ def route_and_answer(user_query: str, screenshot_base64: str, db_messages: list)
 
     # 5. Context Building
     t0 = time.time()
-    final_prompt = build_context(user_query, processed, chat_history_text, rag_results)
+    final_prompt = build_context(user_query, processed, chat_history_text, rag_results, long_term_memories)
     
     # Strictly ensure human-readable maths in system instructions
     final_prompt = "INSTRUCTION: Provide math formulas in plain human-readable text (e.g. `(-b ± √(b² - 4ac)) / (2a)`) and NEVER in LaTeX.\n\n" + final_prompt

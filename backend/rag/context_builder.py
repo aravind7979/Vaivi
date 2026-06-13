@@ -1,4 +1,4 @@
-def build_context(query, processed_input, chat_history_text, rag_results):
+def build_context(query, processed_input, chat_history_text, rag_results, long_term_memories=None):
     """
     Combines all context sources into a structured string for the LLM.
     """
@@ -21,6 +21,12 @@ Tone: Professional, helpful, highly intelligent, and focused on practical execut
 """
 
     context_blocks = [system_prompt]
+
+    if long_term_memories:
+        ltm_text = "--- KNOWN FACTS ABOUT THE USER (DO NOT MENTION THESE UNLESS RELEVANT) ---\n"
+        for mem in long_term_memories:
+            ltm_text += f"- {mem}\n"
+        context_blocks.append(ltm_text)
 
     if rag_results:
         rag_text = "--- KNOWLEDGE BASE CONTEXT ---\n"

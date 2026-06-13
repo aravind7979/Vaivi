@@ -13,6 +13,7 @@ class User(Base):
     created_at = Column(TIMESTAMP, default=datetime.utcnow)
 
     chats = relationship("Chat", back_populates="user")
+    memories = relationship("LongTermMemory", back_populates="user", cascade="all, delete-orphan")
 
 class Chat(Base):
     __tablename__ = "chats"
@@ -36,3 +37,15 @@ class Message(Base):
     created_at = Column(TIMESTAMP, default=datetime.utcnow)
 
     chat = relationship("Chat", back_populates="messages")
+
+class LongTermMemory(Base):
+    __tablename__ = "long_term_memories"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    memory_text = Column(String, nullable=False)
+    memory_type = Column(String, default="general") # e.g. preference, goal, profile
+    importance = Column(Integer, default=1)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="memories")
