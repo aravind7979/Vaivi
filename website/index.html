@@ -1475,7 +1475,7 @@
             if (!query && !isScreenShared && validFiles.length === 0) return;
 
             if (!currentChatId) {
-                const title = query ? query.substring(0, 30) : "New Chat";
+                const title = "New Chat";
                 await createNewChat(title);
             } else {
                 emptyState.style.display = 'none';
@@ -1542,6 +1542,11 @@
                 addMessageToUI(responseText, "ai");
                 
                 if(isLiveMode && responseText) liveSpeak(responseText);
+                
+                // Refresh chats list to get the new AI-generated title if it was a new chat
+                if (queryCounter === 1 || !currentChatId) {
+                    await loadChats();
+                }
 
                 // --- ADMOB POST-TASK TRIGGER ---
                 queryCounter++;

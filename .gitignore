@@ -24,7 +24,8 @@ desktop/src-tauri/gen/android/buildSrc/.kotlin/
 desktop/src-tauri/gen/android/.idea/
 desktop/src-tauri/gen/android/local.properties
 
-# SQLite database (contains user data - never commit)
+# Local databases and FAISS indices (contains user data - never commit)
+backend/data/
 backend/vaivi.db
 backend/vaivi_old.db
 

@@ -4,8 +4,11 @@ import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-INDEX_FILE = os.path.join(os.path.dirname(__file__), "index.faiss")
-METADATA_FILE = os.path.join(os.path.dirname(__file__), "metadata.json")
+# Ensure the data directory exists
+os.makedirs(os.path.join(os.path.dirname(__file__), "..", "data"), exist_ok=True)
+
+INDEX_FILE = os.path.join(os.path.dirname(__file__), "..", "data", "index.faiss")
+METADATA_FILE = os.path.join(os.path.dirname(__file__), "..", "data", "metadata.json")
 MODEL_NAME = 'all-MiniLM-L6-v2'
 
 class RAGRetriever:
