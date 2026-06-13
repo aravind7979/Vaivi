@@ -15,9 +15,11 @@ import models
 import auth
 from core.orchestrator import route_and_answer
 from core.memory import get_recent_memory, save_message, get_long_term_memories, extract_and_save_memory_local
+from core.title_generator import generate_title
 import time
 
-# Create DB tables
+# Feature flag for local title generation
+ENABLE_LOCAL_TITLE_GENERATION = True
 models.Base.metadata.create_all(bind=engine)
 
 load_dotenv()
@@ -159,6 +161,17 @@ async def ask_assistant(request: AskRequest, db: Session = Depends(get_db), curr
     if chat:
         db.add(models.Message(chat_id=chat.id, role="user", content=request.query))
         db.commit()
+        
+        # Local Title Generation
+        if ENABLE_LOCAL_TITLE_GENERATION and chat.title == "New Chat" and len(request.query) > 10:
+            try:
+                msg_count = db.query(models.Message).filter(models.Message.chat_id == chat.id).count()
+                if msg_count <= 1:
+                    chat.title = generate_title(request.query)
+                    db.commit()
+            except Exception as e:
+                print(f"Title generation failed: {e}")
+                
         recent_msgs = db.query(models.Message)\
             .filter(models.Message.chat_id == chat.id)\
             .order_by(models.Message.created_at.asc())\
@@ -206,6 +219,16 @@ async def chat_with_media(
             if chat and query:
                 db.add(models.Message(chat_id=chat.id, role="user", content=f"[Screen Context] {query}"))
                 db.commit()
+                
+                # Local Title Generation
+                if ENABLE_LOCAL_TITLE_GENERATION and chat.title == "New Chat" and len(query) > 10:
+                    try:
+                        msg_count = db.query(models.Message).filter(models.Message.chat_id == chat.id).count()
+                        if msg_count <= 1:
+                            chat.title = generate_title(query)
+                            db.commit()
+                    except Exception as e:
+                        print(f"Title generation failed: {e}")
 
         recent_msgs = []
         if chat:
@@ -267,8 +290,19 @@ async def unified_copilot_query(
     
     # Save user query
     if chat_id:
+        chat = db.query(models.Chat).filter(models.Chat.id == chat_id, models.Chat.user_id == current_user.id).first()
         db_msg = f"[Screen] {query}" if pil_images else query
         save_message(db, chat_id, current_user.id, "user", db_msg)
+        
+        # Local Title Generation
+        if chat and ENABLE_LOCAL_TITLE_GENERATION and chat.title == "New Chat" and len(query) > 10:
+            try:
+                msg_count = db.query(models.Message).filter(models.Message.chat_id == chat.id).count()
+                if msg_count <= 1:
+                    chat.title = generate_title(query)
+                    db.commit()
+            except Exception as e:
+                print(f"Title generation failed: {e}")
 
     # Long-Term Memory (Hybrid Retrieval)
     ltm = get_long_term_memories(db, current_user.id, query)
