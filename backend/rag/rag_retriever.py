@@ -29,7 +29,29 @@ class RAGRetriever:
         with open(METADATA_FILE, 'r', encoding='utf-8') as f:
             self.metadata = json.load(f)
 
-    def retrieve(self, query, top_k=3, threshold=1.5):
+    def add_to_index(self, text, metadata_dict):
+        """
+        Dynamically adds a new document or memory to the FAISS index and saves it to disk.
+        """
+        if self.model is None:
+            self.model = SentenceTransformer(MODEL_NAME)
+        if self.index is None:
+            # Initialize empty index if it doesn't exist
+            embedding_dim = self.model.get_sentence_embedding_dimension()
+            self.index = faiss.IndexFlatL2(embedding_dim)
+
+        embedding = self.model.encode([text], convert_to_numpy=True)
+        self.index.add(embedding)
+        
+        chunk_data = {"text": text, **metadata_dict}
+        self.metadata.append(chunk_data)
+        
+        # Save to disk
+        faiss.write_index(self.index, INDEX_FILE)
+        with open(METADATA_FILE, 'w', encoding='utf-8') as f:
+            json.dump(self.metadata, f, indent=4)
+
+    def retrieve(self, query, top_k=3, threshold=1.5, filter_type=None):
         """
         Retrieves relevant chunks for a query.
         L2 distance is used. Lower distance means higher similarity.
@@ -42,14 +64,26 @@ class RAGRetriever:
         distances, indices = self.index.search(query_embedding, top_k)
         
         results = []
+        # Increase search K temporarily because we might filter out results
+        search_k = top_k * 5 if filter_type else top_k
+        distances, indices = self.index.search(query_embedding, search_k)
+        
         for dist, idx in zip(distances[0], indices[0]):
             if idx != -1 and dist < threshold:
                 chunk_data = self.metadata[idx]
+                
+                # Metadata Filtering (e.g. type=memory vs type=document)
+                if filter_type and chunk_data.get("type") != filter_type:
+                    continue
+                    
                 results.append({
                     "text": chunk_data["text"],
                     "source": chunk_data["source"],
                     "distance": float(dist)
                 })
+                
+                if len(results) >= top_k:
+                    break
                 
         return results
 

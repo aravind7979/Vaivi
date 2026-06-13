@@ -166,8 +166,8 @@ async def ask_assistant(request: AskRequest, db: Session = Depends(get_db), curr
             .all()
 
     try:
-        # Long-Term Memory
-        ltm = get_long_term_memories(db, current_user.id)
+        # Long-Term Memory (Hybrid Retrieval)
+        ltm = get_long_term_memories(db, current_user.id, request.query)
         
         # Pass to the Orchestrator
         result = route_and_answer(request.query, screenshot_base64=None, db_messages=recent_msgs, long_term_memories=ltm)
@@ -222,8 +222,8 @@ async def chat_with_media(
             import base64
             screenshot_base64 = base64.b64encode(image_bytes).decode('utf-8')
 
-        # Long-Term Memory
-        ltm = get_long_term_memories(db, current_user.id)
+        # Long-Term Memory (Hybrid Retrieval)
+        ltm = get_long_term_memories(db, current_user.id, query)
 
         result = route_and_answer(query or "Analyze this screen", screenshot_base64=screenshot_base64, db_messages=recent_msgs, long_term_memories=ltm)
         ai_text = result["response"]
@@ -270,8 +270,8 @@ async def unified_copilot_query(
         db_msg = f"[Screen] {query}" if pil_images else query
         save_message(db, chat_id, current_user.id, "user", db_msg)
 
-    # Long-Term Memory
-    ltm = get_long_term_memories(db, current_user.id)
+    # Long-Term Memory (Hybrid Retrieval)
+    ltm = get_long_term_memories(db, current_user.id, query)
 
     # Route and Answer
     result = route_and_answer(query, pil_images, chat_history, long_term_memories=ltm)
