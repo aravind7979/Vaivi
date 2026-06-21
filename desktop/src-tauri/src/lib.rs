@@ -1,6 +1,7 @@
 #[allow(unused_imports)]
 use tauri::Manager;
 use tauri::RunEvent;
+use tauri::Emitter;
 
 #[cfg(not(target_os = "android"))]
 use tauri_plugin_autostart::ManagerExt;
@@ -35,7 +36,7 @@ async fn capture_screen() -> Result<Vec<u8>, String> {
 }
 
 #[tauri::command]
-fn hide_window(_app_handle: tauri::AppHandle) {
+fn hide_window(app_handle: tauri::AppHandle) {
     #[cfg(not(target_os = "android"))]
     if let Some(window) = app_handle.get_webview_window("main") {
         let _ = window.hide();
@@ -134,7 +135,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![capture_screen, hide_window])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")
-        .run(|_app_handle, event| {
+        .run(|app_handle, event| {
             if let RunEvent::ExitRequested { api, .. } = event {
                 api.prevent_exit();
                 
