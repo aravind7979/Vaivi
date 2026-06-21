@@ -8,7 +8,12 @@ def migrate_database():
     load_dotenv()
     
     # 1. Connect to both databases
-    sqlite_url = "sqlite:///./data/vaivi.db"
+    # Check if vaivi.db is mounted in the root (like on EC2) or inside data/
+    if os.path.exists("vaivi.db"):
+        sqlite_url = "sqlite:///vaivi.db"
+    else:
+        sqlite_url = "sqlite:///./data/vaivi.db"
+        
     postgres_url = os.getenv("DATABASE_URL")
     
     if not postgres_url or not postgres_url.startswith("postgres"):
