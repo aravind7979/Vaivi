@@ -3,12 +3,39 @@ import re
 import models
 from rag.rag_retriever import get_retriever
 
+from cache import redis_client
+
+class CachedMessage:
+    def __init__(self, role, content):
+        self.role = role
+        self.content = content
+
 def get_recent_memory(db, chat_id, user_id, limit=10):
+    cache_key = f"chat:{chat_id}:messages"
+    
+    # 1. Try Redis Cache
+    if redis_client:
+        cached_msgs = redis_client.lrange(cache_key, 0, limit - 1)
+        if cached_msgs:
+            print(f"[CACHE HIT] Loaded {len(cached_msgs)} messages from Redis for chat {chat_id}")
+            return [CachedMessage(**json.loads(m)) for m in cached_msgs]
+            
+    # 2. Fallback to Postgres
     chat = db.query(models.Chat).filter(models.Chat.id == chat_id, models.Chat.user_id == user_id).first()
     if not chat:
         return []
     messages = db.query(models.Message).filter(models.Message.chat_id == chat_id).order_by(models.Message.created_at.desc()).limit(limit).all()
-    return messages[::-1]
+    messages = messages[::-1]
+    
+    # 3. Populate Redis Cache
+    if redis_client and messages:
+        redis_client.delete(cache_key)
+        for msg in messages:
+            redis_client.rpush(cache_key, json.dumps({"role": msg.role, "content": msg.content}))
+        redis_client.expire(cache_key, 3600) # Expire in 1 hour
+        print(f"[CACHE MISS] Loaded {len(messages)} messages from Postgres and populated Redis")
+        
+    return messages
 
 def save_message(db, chat_id, user_id, role, content):
     chat = db.query(models.Chat).filter(models.Chat.id == chat_id, models.Chat.user_id == user_id).first()
@@ -18,6 +45,13 @@ def save_message(db, chat_id, user_id, role, content):
     db.add(new_msg)
     db.commit()
     db.refresh(new_msg)
+    
+    # Push new message to Redis Cache
+    if redis_client:
+        cache_key = f"chat:{chat_id}:messages"
+        redis_client.rpush(cache_key, json.dumps({"role": role, "content": content}))
+        redis_client.expire(cache_key, 3600)
+        
     return new_msg
 
 def get_long_term_memories(db, user_id, user_query=None):

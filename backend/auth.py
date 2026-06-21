@@ -2,14 +2,17 @@ from datetime import datetime, timedelta
 import os
 import jwt
 import hashlib
+import json
 
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
+from typing import Optional
 
 from database import get_db
 import models
+from cache import redis_client
 
 # =========================
 # CONFIG
@@ -67,6 +70,13 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 # AUTH DEPENDENCY
 # =========================
 
+class CachedUser:
+    def __init__(self, id, email, hashed_password, shortcut_keys):
+        self.id = id
+        self.email = email
+        self.hashed_password = hashed_password
+        self.shortcut_keys = shortcut_keys
+
 def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
@@ -87,9 +97,26 @@ def get_current_user(
     except jwt.PyJWTError:
         raise credentials_exception
 
+    cache_key = f"user:email:{email}"
+    
+    if redis_client:
+        cached_user = redis_client.get(cache_key)
+        if cached_user:
+            print(f"[CACHE HIT] Loaded user {email} from Redis")
+            return CachedUser(**json.loads(cached_user))
+
     user = db.query(models.User).filter(models.User.email == email).first()
 
     if user is None:
         raise credentials_exception
+
+    if redis_client:
+        redis_client.setex(cache_key, 3600, json.dumps({
+            "id": user.id,
+            "email": user.email,
+            "hashed_password": user.hashed_password,
+            "shortcut_keys": user.shortcut_keys
+        }))
+        print(f"[CACHE MISS] Loaded user {email} from Postgres and populated Redis")
 
     return user
