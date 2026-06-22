@@ -14,8 +14,8 @@ from database import engine, get_db
 import models
 import auth
 from core.orchestrator import route_and_answer
-from core.memory import get_recent_memory, save_message, get_long_term_memories, extract_and_save_memory_local
-from core.title_generator import generate_title
+from core.memory import get_recent_memory, save_message, get_long_term_memories
+from tasks import generate_chat_title_task, extract_memory_task
 import time
 
 # Feature flag for local title generation
@@ -162,15 +162,12 @@ async def ask_assistant(request: AskRequest, db: Session = Depends(get_db), curr
         db.add(models.Message(chat_id=chat.id, role="user", content=request.query))
         db.commit()
         
-        # Local Title Generation
+        # Local Title Generation (Asynchronous via Celery)
         if ENABLE_LOCAL_TITLE_GENERATION and chat.title == "New Chat" and len(request.query) > 10:
             try:
-                msg_count = db.query(models.Message).filter(models.Message.chat_id == chat.id).count()
-                if msg_count <= 1:
-                    chat.title = generate_title(request.query)
-                    db.commit()
+                generate_chat_title_task.delay(chat.id, request.query)
             except Exception as e:
-                print(f"Title generation failed: {e}")
+                print(f"Title generation queuing failed: {e}")
                 
         recent_msgs = db.query(models.Message)\
             .filter(models.Message.chat_id == chat.id)\
@@ -190,8 +187,11 @@ async def ask_assistant(request: AskRequest, db: Session = Depends(get_db), curr
             db.add(models.Message(chat_id=chat.id, role="ai", content=ai_text))
             db.commit()
 
-        # Extract memory locally (Instant Regex)
-        extract_and_save_memory_local(db, current_user.id, request.query)
+        # Extract memory asynchronously via Celery
+        try:
+            extract_memory_task.delay(current_user.id, request.query)
+        except Exception as e:
+            print(f"Memory extraction queuing failed: {e}")
 
         return {"response": ai_text, "debug_metrics": result.get("debug_metrics")}
 
@@ -220,15 +220,12 @@ async def chat_with_media(
                 db.add(models.Message(chat_id=chat.id, role="user", content=f"[Screen Context] {query}"))
                 db.commit()
                 
-                # Local Title Generation
+                # Local Title Generation (Asynchronous via Celery)
                 if ENABLE_LOCAL_TITLE_GENERATION and chat.title == "New Chat" and len(query) > 10:
                     try:
-                        msg_count = db.query(models.Message).filter(models.Message.chat_id == chat.id).count()
-                        if msg_count <= 1:
-                            chat.title = generate_title(query)
-                            db.commit()
+                        generate_chat_title_task.delay(chat.id, query)
                     except Exception as e:
-                        print(f"Title generation failed: {e}")
+                        print(f"Title generation queuing failed: {e}")
 
         recent_msgs = []
         if chat:
@@ -255,9 +252,12 @@ async def chat_with_media(
             db.add(models.Message(chat_id=chat.id, role="ai", content=ai_text))
             db.commit()
             
-        # Extract memory locally (Instant Regex)
+        # Extract memory asynchronously via Celery
         if query:
-            extract_and_save_memory_local(db, current_user.id, query)
+            try:
+                extract_memory_task.delay(current_user.id, query)
+            except Exception as e:
+                print(f"Memory extraction queuing failed: {e}")
 
         return {"response": ai_text, "debug_metrics": result.get("debug_metrics")}
 
@@ -294,15 +294,12 @@ async def unified_copilot_query(
         db_msg = f"[Screen] {query}" if pil_images else query
         save_message(db, chat_id, current_user.id, "user", db_msg)
         
-        # Local Title Generation
+        # Local Title Generation (Asynchronous via Celery)
         if chat and ENABLE_LOCAL_TITLE_GENERATION and chat.title == "New Chat" and len(query) > 10:
             try:
-                msg_count = db.query(models.Message).filter(models.Message.chat_id == chat.id).count()
-                if msg_count <= 1:
-                    chat.title = generate_title(query)
-                    db.commit()
+                generate_chat_title_task.delay(chat.id, query)
             except Exception as e:
-                print(f"Title generation failed: {e}")
+                print(f"Title generation queuing failed: {e}")
 
     # Long-Term Memory (Hybrid Retrieval)
     ltm = get_long_term_memories(db, current_user.id, query)
@@ -315,8 +312,11 @@ async def unified_copilot_query(
     if chat_id:
         save_message(db, chat_id, current_user.id, "ai", ai_response)
         
-    # Extract memory locally (Instant Regex)
-    extract_and_save_memory_local(db, current_user.id, query)
+    # Extract memory asynchronously via Celery
+    try:
+        extract_memory_task.delay(current_user.id, query)
+    except Exception as e:
+        print(f"Memory extraction queuing failed: {e}")
 
     elapsed_ms = int((time.time() - start_time) * 1000)
     result["debug_info"]["latency_ms"] = elapsed_ms
