@@ -6,11 +6,13 @@ load_dotenv()
 
 redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 
+import ssl
+
 # If using Upstash or any TLS-enabled Redis, ensure the broker uses SSL.
 broker_use_ssl = None
 if redis_url.startswith("rediss://"):
     broker_use_ssl = {
-        'ssl_cert_reqs': 'CERT_REQUIRED'
+        'ssl_cert_reqs': ssl.CERT_REQUIRED
     }
 
 celery_app = Celery(
