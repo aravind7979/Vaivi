@@ -71,7 +71,7 @@ def get_long_term_memories(db, user_id, user_query=None):
     # 2. FAISS Semantic Search for Contextual Facts
     if user_query:
         retriever = get_retriever()
-        semantic_results = retriever.retrieve(user_query, top_k=3, threshold=1.5, filter_type="memory")
+        semantic_results = retriever.retrieve(user_query, top_k=3, threshold=1.5, filter_type="memory", user_id=user_id)
         for res in semantic_results:
             text = res["text"]
             if text not in memory_texts: # Deduplicate

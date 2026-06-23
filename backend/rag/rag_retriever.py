@@ -1,94 +1,136 @@
 import os
-import json
-import faiss
-import numpy as np
+import uuid
+from qdrant_client import QdrantClient
+from qdrant_client.http import models as qmodels
 from sentence_transformers import SentenceTransformer
+from dotenv import load_dotenv
 
-# Ensure the data directory exists
-os.makedirs(os.path.join(os.path.dirname(__file__), "..", "data"), exist_ok=True)
+load_dotenv()
 
-INDEX_FILE = os.path.join(os.path.dirname(__file__), "..", "data", "index.faiss")
-METADATA_FILE = os.path.join(os.path.dirname(__file__), "..", "data", "metadata.json")
+QDRANT_URL = os.getenv("QDRANT_URL")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+COLLECTION_NAME = "memories"
 MODEL_NAME = 'all-MiniLM-L6-v2'
 
 class RAGRetriever:
     def __init__(self):
         self.model = None
-        self.index = None
-        self.metadata = []
-        self._load_index()
+        self.client = None
+        self._init_qdrant()
 
-    def _load_index(self):
-        if not os.path.exists(INDEX_FILE) or not os.path.exists(METADATA_FILE):
-            print("Warning: FAISS index or metadata not found. RAG will return empty results.")
+    def _init_qdrant(self):
+        if not QDRANT_URL:
+            print("Warning: QDRANT_URL is not set. Qdrant retriever will not function.")
             return
 
-        print("Loading embedding model for retrieval...")
+        print("Loading embedding model for Qdrant...")
         self.model = SentenceTransformer(MODEL_NAME)
         
-        print("Loading FAISS index...")
-        self.index = faiss.read_index(INDEX_FILE)
+        print("Connecting to Qdrant Cloud...")
+        self.client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
         
-        with open(METADATA_FILE, 'r', encoding='utf-8') as f:
-            self.metadata = json.load(f)
+        # Check and create collection
+        try:
+            # We use a try-except block here because checking if collection exists 
+            # might throw an exception if the API key/URL is invalid or connection fails.
+            if not self.client.collection_exists(COLLECTION_NAME):
+                embedding_dim = self.model.get_sentence_embedding_dimension()
+                self.client.create_collection(
+                    collection_name=COLLECTION_NAME,
+                    vectors_config=qmodels.VectorParams(
+                        size=embedding_dim,
+                        distance=qmodels.Distance.EUCLID  # Matches original FAISS L2 distance
+                    )
+                )
+                print(f"Created Qdrant collection: {COLLECTION_NAME}")
+            else:
+                print(f"Connected to existing Qdrant collection: {COLLECTION_NAME}")
+        except Exception as e:
+            print(f"Failed to initialize Qdrant collection: {e}")
 
     def add_to_index(self, text, metadata_dict):
         """
-        Dynamically adds a new document or memory to the FAISS index and saves it to disk.
+        Dynamically adds a new document or memory to the Qdrant collection.
         """
-        if self.model is None:
-            self.model = SentenceTransformer(MODEL_NAME)
-        if self.index is None:
-            # Initialize empty index if it doesn't exist
-            embedding_dim = self.model.get_sentence_embedding_dimension()
-            self.index = faiss.IndexFlatL2(embedding_dim)
+        if self.client is None:
+            self._init_qdrant()
+            if self.client is None:
+                print("Error: Qdrant client not initialized. Cannot add to index.")
+                return
 
-        embedding = self.model.encode([text], convert_to_numpy=True)
-        self.index.add(embedding)
-        
-        chunk_data = {"text": text, **metadata_dict}
-        self.metadata.append(chunk_data)
-        
-        # Save to disk
-        faiss.write_index(self.index, INDEX_FILE)
-        with open(METADATA_FILE, 'w', encoding='utf-8') as f:
-            json.dump(self.metadata, f, indent=4)
+        try:
+            embedding = self.model.encode([text], convert_to_numpy=True)
+            point_id = str(uuid.uuid4())
+            payload = {"text": text, **metadata_dict}
+            
+            self.client.upsert(
+                collection_name=COLLECTION_NAME,
+                points=[
+                    qmodels.PointStruct(
+                        id=point_id,
+                        vector=embedding[0].tolist(),
+                        payload=payload
+                    )
+                ]
+            )
+            print(f"Successfully added point {point_id} to Qdrant Cloud.")
+        except Exception as e:
+            print(f"Qdrant add failed: {e}")
 
-    def retrieve(self, query, top_k=3, threshold=1.5, filter_type=None):
+    def retrieve(self, query, top_k=3, threshold=1.5, filter_type=None, user_id=None):
         """
-        Retrieves relevant chunks for a query.
-        L2 distance is used. Lower distance means higher similarity.
-        Threshold filters out bad matches.
+        Retrieves relevant chunks for a query from Qdrant Cloud.
+        Using EUCLID distance: lower score means higher similarity.
         """
-        if self.index is None or not self.metadata:
+        if self.client is None or self.model is None:
+            self._init_qdrant()
+            if self.client is None:
+                return []
+
+        try:
+            query_embedding = self.model.encode([query], convert_to_numpy=True)
+            
+            # Construct multi-tenant filtering conditions
+            must_conditions = []
+            if filter_type:
+                must_conditions.append(
+                    qmodels.FieldCondition(
+                        key="type",
+                        match=qmodels.MatchValue(value=filter_type)
+                    )
+                )
+            if user_id is not None:
+                must_conditions.append(
+                    qmodels.FieldCondition(
+                        key="user_id",
+                        match=qmodels.MatchValue(value=user_id)
+                    )
+                )
+
+            query_filter = qmodels.Filter(must=must_conditions) if must_conditions else None
+
+            search_results = self.client.search(
+                collection_name=COLLECTION_NAME,
+                query_vector=query_embedding[0].tolist(),
+                limit=top_k,
+                query_filter=query_filter,
+                with_payload=True
+            )
+            
+            results = []
+            for hit in search_results:
+                # Euclidean distance: smaller scores represent closer vectors
+                if hit.score < threshold:
+                    payload = hit.payload
+                    results.append({
+                        "text": payload.get("text", ""),
+                        "source": payload.get("source", "unknown"),
+                        "distance": float(hit.score)
+                    })
+            return results
+        except Exception as e:
+            print(f"Qdrant search failed: {e}")
             return []
-
-        query_embedding = self.model.encode([query], convert_to_numpy=True)
-        distances, indices = self.index.search(query_embedding, top_k)
-        
-        results = []
-        # Increase search K temporarily because we might filter out results
-        search_k = top_k * 5 if filter_type else top_k
-        distances, indices = self.index.search(query_embedding, search_k)
-        
-        for dist, idx in zip(distances[0], indices[0]):
-            if idx != -1 and dist < threshold:
-                chunk_data = self.metadata[idx]
-                
-                # Metadata Filtering (e.g. type=memory vs type=document)
-                if filter_type and chunk_data.get("type") != filter_type:
-                    continue
-                    
-                results.append({
-                    "text": chunk_data["text"],
-                    "source": chunk_data["source"],
-                    "distance": float(dist)
-                })
-                
-                if len(results) >= top_k:
-                    break
-                
-        return results
 
 # Singleton instance
 retriever = RAGRetriever()
