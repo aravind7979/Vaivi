@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from PIL import Image
 import io
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from datetime import timedelta
 
 from database import engine, get_db
@@ -45,6 +46,27 @@ genai.configure(api_key=GEMINI_API_KEY)
 
 vision_model = genai.GenerativeModel('gemini-2.5-flash-lite')
 text_model = genai.GenerativeModel('gemini-2.5-flash-lite')
+
+@app.get("/api/health")
+async def health_check(db: Session = Depends(get_db)):
+    try:
+        db.execute(text("SELECT 1"))
+    except Exception as db_err:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Database connection error: {db_err}"
+        )
+    
+    from cache import redis_client
+    if redis_client:
+        try:
+            redis_client.ping()
+        except Exception as redis_err:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Redis connection error: {redis_err}"
+            )
+    return {"status": "healthy"}
 
 # --- Schemas ---
 class UserCreate(BaseModel):
