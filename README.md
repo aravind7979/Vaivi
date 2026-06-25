@@ -98,15 +98,43 @@ User Trigger (Alt+V)
 
 ## 🚀 Setup Instructions
 
+### 1. Backend Orchestration (Docker Compose)
+The entire backend stack is fully containerized and orchestrated via Docker Compose. It launches an **Nginx Gateway (port 80)**, **FastAPI API Server**, and a **Celery Worker** (handling asynchronous title generation and memory extraction).
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/aravind7979/Vaivi
+   cd Vaivi
+   ```
+2. Create `backend/.env` with your API keys:
+   ```env
+   # SQLite is used by default if DATABASE_URL is not set
+   REDIS_URL="rediss://..."      # Upstash Redis Connection String
+   GEMINI_API_KEY="AIzaSy..."    # Google Gemini API Key
+   QDRANT_URL="https://..."      # Qdrant Cloud URL
+   QDRANT_API_KEY="..."          # Qdrant Cloud API Key
+   ```
+3. Start the stack:
+   ```bash
+   docker compose up -d --build
+   ```
+4. Verify health checks (wait 20-30 seconds):
+   ```bash
+   docker compose ps
+   ```
+
+### 2. Frontend web app
+Open the static site locally using a simple Python server:
 ```bash
-git clone https://github.com/aravind7979/Vaivi
-cd Vaivi
+cd website
+python -m http.server 3000
+# Open http://localhost:3000 in your browser!
+```
 
-# Backend setup
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-
-# Run desktop app (Tauri)
+### 3. Tauri Desktop client (Rust)
+To run the desktop application wrapper:
+```bash
+cd desktop
 npm install
 npm run tauri dev
 ```
