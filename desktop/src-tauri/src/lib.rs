@@ -57,6 +57,7 @@ pub fn run() {
             .plugin(tauri_plugin_updater::Builder::new().build())
             .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
                 if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.unminimize();
                     let _ = window.show();
                     let _ = window.set_focus();
                 }
@@ -71,9 +72,11 @@ pub fn run() {
                             ) {
                                 if let Some(window) = app.get_webview_window("main") {
                                     let is_visible = window.is_visible().unwrap_or(false);
-                                    if is_visible {
+                                    let is_focused = window.is_focused().unwrap_or(false);
+                                    if is_visible && is_focused {
                                         let _ = window.hide();
                                     } else {
+                                        let _ = window.unminimize();
                                         let _ = window.show();
                                         let _ = window.set_focus();
                                     }
