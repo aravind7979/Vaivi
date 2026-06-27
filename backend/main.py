@@ -185,7 +185,7 @@ async def ask_assistant(request: AskRequest, db: Session = Depends(get_db), curr
         db.commit()
         
         # Local Title Generation (Asynchronous via Celery)
-        if ENABLE_LOCAL_TITLE_GENERATION and chat.title == "New Chat" and len(request.query) > 10:
+        if ENABLE_LOCAL_TITLE_GENERATION and chat.title == "New Chat" and len(request.query.strip()) > 0:
             try:
                 generate_chat_title_task.delay(chat.id, request.query)
             except Exception as e:
@@ -243,7 +243,7 @@ async def chat_with_media(
                 db.commit()
                 
                 # Local Title Generation (Asynchronous via Celery)
-                if ENABLE_LOCAL_TITLE_GENERATION and chat.title == "New Chat" and len(query) > 10:
+                if ENABLE_LOCAL_TITLE_GENERATION and chat.title == "New Chat" and len(query.strip()) > 0:
                     try:
                         generate_chat_title_task.delay(chat.id, query)
                     except Exception as e:
@@ -317,7 +317,7 @@ async def unified_copilot_query(
         save_message(db, chat_id, current_user.id, "user", db_msg)
         
         # Local Title Generation (Asynchronous via Celery)
-        if chat and ENABLE_LOCAL_TITLE_GENERATION and chat.title == "New Chat" and len(query) > 10:
+        if chat and ENABLE_LOCAL_TITLE_GENERATION and chat.title == "New Chat" and len(query.strip()) > 0:
             try:
                 generate_chat_title_task.delay(chat.id, query)
             except Exception as e:

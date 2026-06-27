@@ -4,9 +4,10 @@ A cross-platform AI system that understands your screen, processes voice and tex
 
 ---
 
-## 🔗 Demo
+## 🔗 Links
 
-* **Live App**: https://vaivi.vercel.app
+* **Live Web App**: https://vaivi.vercel.app
+* **Windows App Download**: https://vaivi.vercel.app/download
 * **Demo Video (90s)**: https://youtu.be/SGj-_pTr8qg
 * **GitHub**: https://github.com/aravind7979/Vaivi
 

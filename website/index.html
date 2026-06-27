@@ -789,6 +789,14 @@
         <div class="chat-list" id="chatList">
             <!-- Chats populated here -->
         </div>
+        
+        <!-- Web-Only Download Button -->
+        <div id="downloadAppSection" style="display: none; padding: 15px; margin-top: auto;">
+            <a href="https://vaivi.vercel.app/download" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; background: rgba(255,255,255,0.05); color: #fff; text-decoration: none; border-radius: 8px; font-size: 14px; border: 1px solid rgba(255,255,255,0.1); transition: background 0.2s;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Download Vaivi
+            </a>
+        </div>
     </div>
 
     <div class="main-content">
@@ -1544,7 +1552,7 @@
                 if(isLiveMode && responseText) liveSpeak(responseText);
                 
                 // Refresh chats list to get the new AI-generated title if it was a new chat
-                if (queryCounter === 1 || !currentChatId) {
+                if (queryCounter === 0) {
                     await loadChats();
                 }
 
@@ -1615,6 +1623,13 @@
         });
 
         init();
+
+        if (window.__TAURI__) {
+            document.body.classList.add('tauri-mode');
+        } else {
+            // Show download button only in web browser
+            document.getElementById('downloadAppSection').style.display = 'block';
+        }
 
         // Marketing logic bindings
         const observer = new IntersectionObserver(entries => {
