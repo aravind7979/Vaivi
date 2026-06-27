@@ -8,6 +8,7 @@ on:
       - 'backend/**'
       - 'docker-compose.yml'
       - 'nginx.conf'
+      - '.github/workflows/**'
 
 jobs:
   deploy:
