@@ -27,7 +27,7 @@ jobs:
             git pull origin main
             
             # Rebuild and restart the Docker containers in detached mode
-            docker-compose up -d --build
+            sudo docker-compose up -d --build
             
             # Optional: Clean up old unused Docker images to free up space
-            docker image prune -f
+            sudo docker image prune -f
