@@ -71,7 +71,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 # =========================
 
 class CachedUser:
-    def __init__(self, id, email, hashed_password, shortcut_keys):
+    def __init__(self, id, email, hashed_password, shortcut_keys="Ctrl+Shift+Space", **kwargs):
         self.id = id
         self.email = email
         self.hashed_password = hashed_password
@@ -100,10 +100,13 @@ def get_current_user(
     cache_key = f"user:email:{email}"
     
     if redis_client:
-        cached_user = redis_client.get(cache_key)
-        if cached_user:
-            print(f"[CACHE HIT] Loaded user {email} from Redis")
-            return CachedUser(**json.loads(cached_user))
+        try:
+            cached_user = redis_client.get(cache_key)
+            if cached_user:
+                print(f"[CACHE HIT] Loaded user {email} from Redis")
+                return CachedUser(**json.loads(cached_user))
+        except Exception as e:
+            print(f"[CACHE ERROR] Redis get failed: {e}")
 
     user = db.query(models.User).filter(models.User.email == email).first()
 
@@ -111,12 +114,15 @@ def get_current_user(
         raise credentials_exception
 
     if redis_client:
-        redis_client.setex(cache_key, 3600, json.dumps({
-            "id": user.id,
-            "email": user.email,
-            "hashed_password": user.hashed_password,
-            "shortcut_keys": user.shortcut_keys
-        }))
-        print(f"[CACHE MISS] Loaded user {email} from Postgres and populated Redis")
+        try:
+            redis_client.setex(cache_key, 3600, json.dumps({
+                "id": user.id,
+                "email": user.email,
+                "hashed_password": user.hashed_password,
+                "shortcut_keys": user.shortcut_keys
+            }))
+            print(f"[CACHE MISS] Loaded user {email} from Postgres and populated Redis")
+        except Exception as e:
+            print(f"[CACHE ERROR] Redis set failed: {e}")
 
     return user
