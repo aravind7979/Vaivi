@@ -52,34 +52,33 @@ User Trigger (Alt+V)
 
 ## 🧠 Engineering Highlights
 
-### Multimodal AI Pipeline
+### Cloud-Native & Distributed Systems
+* **Stateless Architecture**: Migrated from a monolithic stateful server to a fully stateless distributed backend.
+* **Orchestration**: Containerized the entire backend stack (Gateway, API, Workers) using **Docker Compose**.
+* **Distributed Caching**: Implemented **Redis (Upstash)** for sub-millisecond session state, user profiles, and chat caching using Cache-Aside and Write-Through patterns.
+* **Asynchronous Workers**: Built a robust **Celery** + Redis Message Queue pipeline to offload heavy AI operations (like vector embedding extraction), ensuring a non-blocking and highly responsive API.
+* **Managed Data & Vectors**: Migrated local SQLite and local FAISS indexes to managed **AWS RDS PostgreSQL** and remote **Qdrant Cloud** for true horizontal scalability.
+* **Gateway Layer**: Designed an **Nginx** reverse proxy to handle request routing and shield internal microservices.
 
+### Multimodal AI Pipeline
 * Designed a custom pipeline combining **screen context, user query, and memory**
 * Implemented **context aggregation + LLM orchestration** for grounded responses
 
 ### Real-Time Interaction System
-
 * Engineered **event-driven invocation** using global hotkey (Alt+V)
 * Built low-latency processing for real-time assistance within active workflows
 
-### Cross-Platform Architecture
-
-* Packaged desktop application using **Tauri (Rust)** for native performance
+### Cross-Platform Architecture & CI/CD
+* **Automated Deployments**: Engineered a seamless CI/CD pipeline using GitHub Actions to automatically deploy frontend changes to **Vercel** and orchestrate zero-downtime backend builds on **AWS EC2**.
+* **Secure Desktop Auto-Updater**: Packaged the desktop application using **Tauri (Rust)** and engineered a cryptographically signed auto-update pipeline leveraging GitHub Releases.
 * Designed system to support **web + desktop + Android (in progress)**
 
-### Backend & Infrastructure
-
-* Developed **FastAPI backend deployed on AWS EC2**
-* Handles image streams (Base64), audio input, and query orchestration
-
 ### Voice & Streaming
-
 * Implemented **bidirectional voice interaction pipeline**
 * Integrated real-time response streaming for improved UX
 
 ### Error Handling
-
-* API failure fallback strategies
+* Fault-tolerant Redis fallback strategies to ensure uninterrupted session validation
 * Handling empty or invalid screen context
 * Permission and capture edge-case handling
 
@@ -87,12 +86,11 @@ User Trigger (Alt+V)
 
 ## 🛠️ Tech Stack
 
-* Backend: Python, FastAPI
-* Desktop: Tauri (Rust), JavaScript
-* AI/LLM: Gemini API
-* Cloud: AWS EC2
-* Data Handling: Base64 image streams, audio processing
-* Architecture: Multimodal RAG pipeline
+* **Infrastructure**: AWS EC2, AWS RDS (PostgreSQL), Docker, Docker Compose, Nginx, GitHub Actions
+* **Backend**: Python, FastAPI, Celery, Upstash Redis, Qdrant Cloud
+* **Frontend/Desktop**: HTML/Vanilla CSS/JS, Tauri (Rust), Vercel
+* **AI/LLM**: Google Gemini API, Sentence Transformers (MiniLM)
+* **Architecture**: Stateless Distributed Microservices, Asynchronous Message Queues, Multimodal RAG
 
 ---
 
