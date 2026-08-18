@@ -1,6 +1,9 @@
-# VAIVI - Real Time Screen-Aware Multimodal AI Copilot
+# VAIVI - Real Time Screen-Aware Multimodal AI System
 
 A cross-platform AI system that understands your screen, processes voice and text input, and delivers real-time contextual assistance through a custom multimodal pipeline.
+
+> [!NOTE]  
+> **The hosted version of this project may be temporarily unavailable due to infrastructure constraints.** Please refer to the source code and documentation for the complete implementation.
 
 ---
 
